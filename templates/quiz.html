@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>AI Quiz Generator</title>
+
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+        AI Learning Hub
+    </div>
+
+
+    <nav>
+
+        <a href="/">
+            Home
+        </a>
+
+        <a href="/learn">
+            Learn
+        </a>
+
+        <a href="/quiz">
+            Quiz
+        </a>
+
+    </nav>
+
+</header>
+
+
+<main class="page">
+
+
+    <a href="/" class="back-btn">
+    ← Back to Home
+</a>
+
+
+    <!-- ==================================
+         HEADER
+         ================================== -->
+
+    <div class="page-header">
+
+        <div class="badge">
+            🧠 AI Quiz Generator
+        </div>
+
+
+        <h1>
+            Test Your Knowledge
+        </h1>
+
+
+        <p>
+            Enter a topic and choose how many
+            questions you want.
+        </p>
+
+    </div>
+
+
+    <!-- ==================================
+         TOPIC
+         ================================== -->
+
+    <div class="input-box">
+
+        <input
+            type="text"
+            id="quizTopic"
+            placeholder="Example: Artificial Intelligence"
+        >
+
+    </div>
+
+
+    <!-- ==================================
+         QUESTION COUNT
+         ================================== -->
+
+    <div class="question-selector">
+
+
+        <h2>
+            📋 Choose Number of Questions
+        </h2>
+
+
+        <p>
+            Select your quiz length
+        </p>
+
+
+        <div class="question-buttons">
+
+
+            <button
+                class="question-count active"
+                onclick="selectQuestionCount(5, this)"
+            >
+                5
+            </button>
+
+
+            <button
+                class="question-count"
+                onclick="selectQuestionCount(10, this)"
+            >
+                10
+            </button>
+
+
+            <button
+                class="question-count"
+                onclick="selectQuestionCount(15, this)"
+            >
+                15
+            </button>
+
+
+            <button
+                class="question-count"
+                onclick="selectQuestionCount(20, this)"
+            >
+                20
+            </button>
+
+
+            <button
+                class="question-count"
+                onclick="selectQuestionCount(25, this)"
+            >
+                25
+            </button>
+
+
+            <button
+                class="question-count"
+                onclick="selectQuestionCount(30, this)"
+            >
+                30
+            </button>
+
+
+            <button
+                class="question-count"
+                onclick="selectQuestionCount(35, this)"
+            >
+                35
+            </button>
+
+
+            <button
+                class="question-count"
+                onclick="selectQuestionCount(40, this)"
+            >
+                40
+            </button>
+
+
+            <button
+                class="question-count"
+                onclick="selectQuestionCount(45, this)"
+            >
+                45
+            </button>
+
+
+            <button
+                class="question-count"
+                onclick="selectQuestionCount(50, this)"
+            >
+                50
+            </button>
+
+
+        </div>
+
+
+        <div class="selected-count">
+
+            Selected:
+
+            <strong id="selectedCount">
+                5
+            </strong>
+
+            Questions
+
+        </div>
+
+
+        <button
+            class="btn generate-btn"
+            onclick="generateQuiz()"
+        >
+
+            🤖 Generate 5 Questions
+
+        </button>
+
+
+    </div>
+
+
+    <!-- ==================================
+         LOADING
+         ================================== -->
+
+    <div
+        id="loading"
+        class="loading"
+        style="display:none;"
+    >
+
+        🤖 AI is creating your quiz...
+
+    </div>
+
+
+    <!-- ==================================
+         QUIZ
+         ================================== -->
+
+    <div
+        id="quizContainer"
+    ></div>
+
+
+    <!-- ==================================
+         SUBMIT
+         ================================== -->
+
+    <div
+        id="submitArea"
+        class="submit-area"
+        style="display:none;"
+    >
+
+        <button
+            class="btn"
+            onclick="submitQuiz()"
+        >
+
+            ✅ Submit Quiz
+
+        </button>
+
+    </div>
+
+
+    <!-- ==================================
+         RESULT
+         ================================== -->
+
+    <div id="result"></div>
+
+
+</main>
+
+
+<footer>
+
+    <p>
+        AI Learning Hub
+    </p>
+
+    <p>
+        AI Learning + Quiz/MCQ Generator
+    </p>
+
+</footer>
+
+
+<script>
+
+
+// ==========================================
+// GLOBAL VARIABLES
+// ==========================================
+
+let quizQuestions = [];
+
+let selectedQuestionCount = 5;
+
+
+// ==========================================
+// SELECT QUESTION COUNT
+// ==========================================
+
+function selectQuestionCount(
+    count,
+    button
+) {
+
+    selectedQuestionCount =
+        count;
+
+
+    // Remove active from all
+    document
+        .querySelectorAll(
+            ".question-count"
+        )
+        .forEach(
+            function(btn) {
+
+                btn.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+    // Add active
+    button.classList.add(
+        "active"
+    );
+
+
+    // Show selected number
+    document
+        .getElementById(
+            "selectedCount"
+        )
+        .textContent =
+        count;
+
+
+    // Change generate button
+    document
+        .querySelector(
+            ".generate-btn"
+        )
+        .textContent =
+        "🤖 Generate "
+        + count
+        + " Questions";
+}
+
+
+// ==========================================
+// GENERATE QUIZ
+// ==========================================
+
+async function generateQuiz() {
+
+
+    const topic =
+        document
+        .getElementById(
+            "quizTopic"
+        )
+        .value
+        .trim();
+
+
+    const loading =
+        document
+        .getElementById(
+            "loading"
+        );
+
+
+    const container =
+        document
+        .getElementById(
+            "quizContainer"
+        );
+
+
+    const submitArea =
+        document
+        .getElementById(
+            "submitArea"
+        );
+
+
+    const result =
+        document
+        .getElementById(
+            "result"
+        );
+
+
+    // Check topic
+    if (!topic) {
+
+        alert(
+            "Please enter a topic."
+        );
+
+        return;
+    }
+
+
+    // Loading
+    loading.style.display =
+        "block";
+
+
+    container.innerHTML =
+        "";
+
+
+    result.innerHTML =
+        "";
+
+
+    submitArea.style.display =
+        "none";
+
+
+    try {
+
+
+        // Send topic + question count
+        const response =
+            await fetch(
+                "/generate-quiz",
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            topic:
+                                topic,
+
+                            question_count:
+                                selectedQuestionCount
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        // Server error
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Quiz generation failed."
+            );
+
+        }
+
+
+        // Get questions
+        quizQuestions =
+            data.questions;
+
+
+        // Validate
+        if (
+            !Array.isArray(
+                quizQuestions
+            )
+            ||
+            quizQuestions.length === 0
+        ) {
+
+            throw new Error(
+                "AI did not return questions."
+            );
+
+        }
+
+
+        // Display
+        displayQuiz();
+
+
+        // Show submit
+        submitArea.style.display =
+            "block";
+
+
+        // Scroll
+        window.scrollTo({
+
+            top: 450,
+
+            behavior:
+                "smooth"
+
+        });
+
+
+    }
+
+    catch (error) {
+
+
+        result.innerHTML = `
+
+            <div class="error-card">
+
+                <h3>
+                    ❌ Quiz Generation Failed
+                </h3>
+
+
+                <p>
+                    ${escapeHTML(
+                        error.message
+                    )}
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+
+    finally {
+
+        loading.style.display =
+            "none";
+
+    }
+
+}
+
+
+// ==========================================
+// DISPLAY QUIZ
+// ==========================================
+
+function displayQuiz() {
+
+
+    const container =
+        document
+        .getElementById(
+            "quizContainer"
+        );
+
+
+    let html = "";
+
+
+    quizQuestions.forEach(
+        function(
+            question,
+            index
+        ) {
+
+
+            html += `
+
+                <div class="quiz-card">
+
+
+                    <div class="question-number">
+
+                        Question
+                        ${index + 1}
+
+                    </div>
+
+
+                    <h2>
+
+                        ${escapeHTML(
+                            question.question
+                        )}
+
+                    </h2>
+
+
+                    <div class="options">
+
+            `;
+
+
+            question.options.forEach(
+                function(
+                    option,
+                    optionIndex
+                ) {
+
+
+                    html += `
+
+                        <label class="option">
+
+
+                            <input
+                                type="radio"
+                                name="question${index}"
+                                value="${optionIndex}"
+                            >
+
+
+                            <span>
+
+                                ${escapeHTML(
+                                    option
+                                )}
+
+                            </span>
+
+
+                        </label>
+
+                    `;
+
+                }
+            );
+
+
+            html += `
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    container.innerHTML =
+        html;
+
+}
+
+
+// ==========================================
+// SUBMIT QUIZ
+// ==========================================
+
+function submitQuiz() {
+
+
+    let score = 0;
+
+    let unanswered = 0;
+
+    let reviewHTML = "";
+
+
+    quizQuestions.forEach(
+        function(
+            question,
+            index
+        ) {
+
+
+            const selected =
+                document.querySelector(
+                    `input[name="question${index}"]:checked`
+                );
+
+
+            // No answer
+            if (!selected) {
+
+                unanswered++;
+
+                return;
+
+            }
+
+
+            const selectedAnswer =
+                Number(
+                    selected.value
+                );
+
+
+            const correctAnswer =
+                Number(
+                    question.answer
+                );
+
+
+            const selectedText =
+                question.options[
+                    selectedAnswer
+                ];
+
+
+            const correctText =
+                question.options[
+                    correctAnswer
+                ];
+
+
+            // ==================================
+            // CORRECT
+            // ==================================
+
+            if (
+                selectedAnswer ===
+                correctAnswer
+            ) {
+
+
+                score++;
+
+
+                reviewHTML += `
+
+                    <div
+                        class="answer-review correct-answer"
+                    >
+
+                        <h3>
+
+                            Q${index + 1}
+                            ✅ Correct
+
+                        </h3>
+
+
+                        <p>
+
+                            <strong>
+                                Your Answer:
+                            </strong>
+
+                            ${escapeHTML(
+                                selectedText
+                            )}
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                Explanation:
+                            </strong>
+
+                            ${escapeHTML(
+                                question.explanation
+                            )}
+
+                        </p>
+
+                    </div>
+
+                `;
+
+            }
+
+
+            // ==================================
+            // WRONG
+            // ==================================
+
+            else {
+
+
+                reviewHTML += `
+
+                    <div
+                        class="answer-review wrong-answer"
+                    >
+
+                        <h3>
+
+                            Q${index + 1}
+                            ❌ Wrong
+
+                        </h3>
+
+
+                        <p>
+
+                            <strong>
+                                Your Answer:
+                            </strong>
+
+                            ${escapeHTML(
+                                selectedText
+                            )}
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                Correct Answer:
+                            </strong>
+
+                            ${escapeHTML(
+                                correctText
+                            )}
+
+                        </p>
+
+
+                        <p>
+
+                            <strong>
+                                Explanation:
+                            </strong>
+
+                            ${escapeHTML(
+                                question.explanation
+                            )}
+
+                        </p>
+
+                    </div>
+
+                `;
+
+            }
+
+        }
+    );
+
+
+    // ==================================
+    // UNANSWERED
+    // ==================================
+
+    if (
+        unanswered > 0
+    ) {
+
+        alert(
+            "Please answer all "
+            + quizQuestions.length
+            + " questions first."
+        );
+
+        return;
+
+    }
+
+
+    // ==================================
+    // SCORE
+    // ==================================
+
+    const total =
+        quizQuestions.length;
+
+
+    const percentage =
+        Math.round(
+            (
+                score /
+                total
+            ) * 100
+        );
+
+
+    let message;
+
+
+    if (
+        percentage >= 80
+    ) {
+
+        message =
+            "🏆 Excellent Performance!";
+
+    }
+
+    else if (
+        percentage >= 60
+    ) {
+
+        message =
+            "👍 Good Job!";
+
+    }
+
+    else {
+
+        message =
+            "📚 Keep Learning!";
+
+    }
+
+
+    // ==================================
+    // RESULT
+    // ==================================
+
+    document
+        .getElementById(
+            "result"
+        )
+        .innerHTML = `
+
+        <div class="result-card">
+
+
+            <h1>
+                🎉 Quiz Completed!
+            </h1>
+
+
+            <h2>
+                ${message}
+            </h2>
+
+
+            <div class="score">
+
+                ${score}
+                /
+                ${total}
+
+            </div>
+
+
+            <div class="percentage">
+
+                ${percentage}%
+
+            </div>
+
+
+            <p>
+
+                You answered
+                ${score}
+                questions correctly.
+
+            </p>
+
+
+            <hr>
+
+
+            <h2>
+                📋 Answer Review
+            </h2>
+
+
+            ${reviewHTML}
+
+
+        </div>
+
+    `;
+
+
+    // Scroll to result
+    document
+        .getElementById(
+            "result"
+        )
+        .scrollIntoView({
+
+            behavior:
+                "smooth"
+
+        });
+
+}
+
+
+// ==========================================
+// ESCAPE HTML
+// ==========================================
+
+function escapeHTML(
+    text
+) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        text;
+
+
+    return div.innerHTML;
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>

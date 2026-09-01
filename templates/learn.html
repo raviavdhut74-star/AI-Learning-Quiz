@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>AI Learning</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="logo">
+        AI Learning Hub
+    </div>
+
+
+    <nav>
+
+        <a href="/">
+            Home
+        </a>
+
+        <a href="/learn">
+            Learn
+        </a>
+
+        <a href="/quiz">
+            Quiz
+        </a>
+
+    </nav>
+
+</header>
+
+
+<main class="page">
+
+    <a href="/" class="back-btn">
+    ← Back to Home
+</a>
+
+    <div class="page-header">
+
+        <div class="badge">
+            📚 AI Tutor
+        </div>
+
+
+        <h1>
+            Learn Any Topic
+        </h1>
+
+
+        <p>
+            Enter a topic and AI will explain it
+            in a simple way.
+        </p>
+
+    </div>
+
+
+    <div class="input-box">
+
+        <input
+            type="text"
+            id="topic"
+            placeholder="Example: Artificial Intelligence"
+        >
+
+
+        <button
+            class="btn"
+            onclick="generateLearning()"
+        >
+            ✨ Generate Learning Material
+        </button>
+
+    </div>
+
+
+    <div
+        id="loading"
+        class="loading"
+        style="display:none;"
+    >
+        🤖 AI is preparing your learning material...
+    </div>
+
+
+    <div
+        id="learningResult"
+    ></div>
+
+
+</main>
+
+
+<footer>
+
+    <p>
+        AI Learning Hub
+    </p>
+
+</footer>
+
+
+<script>
+
+async function generateLearning() {
+
+
+    const topic =
+        document
+        .getElementById("topic")
+        .value
+        .trim();
+
+
+    const result =
+        document
+        .getElementById("learningResult");
+
+
+    const loading =
+        document
+        .getElementById("loading");
+
+
+    if (!topic) {
+
+        alert(
+            "Please enter a topic."
+        );
+
+        return;
+
+    }
+
+
+    loading.style.display =
+        "block";
+
+    result.innerHTML =
+        "";
+
+
+    try {
+
+
+        const response =
+            await fetch(
+                "/generate-learning",
+                {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        topic: topic
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                "Learning generation failed."
+            );
+
+        }
+
+
+        const text =
+            data.result;
+
+
+        result.innerHTML = `
+
+            <div class="ai-learning-card">
+
+                <h2 class="topic-title">
+                    📚 ${escapeHTML(topic)}
+                </h2>
+
+
+                <div class="ai-output">
+
+                    ${formatLearning(text)}
+
+                </div>
+
+
+                <div class="learning-actions">
+
+                    <a
+                        href="/quiz"
+                        class="btn"
+                    >
+                        🧠 Generate Quiz
+                    </a>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+    }
+
+    catch (error) {
+
+
+        result.innerHTML = `
+
+            <div class="error-card">
+
+                <h3>
+                    ❌ Something went wrong
+                </h3>
+
+                <p>
+                    ${escapeHTML(
+                        error.message
+                    )}
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+
+    finally {
+
+        loading.style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =================================
+   FORMAT AI LEARNING
+   ================================= */
+
+function formatLearning(text) {
+
+
+    let html =
+        escapeHTML(text);
+
+
+    html =
+        html.replace(
+            /💡 SIMPLE EXPLANATION/gi,
+            '<div class="ai-section explanation"><h3>💡 Simple Explanation</h3>'
+        );
+
+
+    html =
+        html.replace(
+            /🔑 KEY POINTS/gi,
+            '</div><div class="ai-section keypoints"><h3>🔑 Key Points</h3>'
+        );
+
+
+    html =
+        html.replace(
+            /🌍 REAL-LIFE EXAMPLE/gi,
+            '</div><div class="ai-section example"><h3>🌍 Real-Life Example</h3>'
+        );
+
+
+    html =
+        html.replace(
+            /📖 IMPORTANT TERMS/gi,
+            '</div><div class="ai-section terms"><h3>📖 Important Terms</h3>'
+        );
+
+
+    html =
+        html.replace(
+            /⚡ QUICK SUMMARY/gi,
+            '</div><div class="ai-section summary"><h3>⚡ Quick Summary</h3>'
+        );
+
+
+    html =
+        html.replace(
+            /✓/g,
+            '<br>✓ '
+        );
+
+
+    html =
+        html.replace(
+            /\n/g,
+            '<br>'
+        );
+
+
+    html +=
+        '</div>';
+
+
+    return html;
+
+}
+
+
+/* =================================
+   ESCAPE HTML
+   ================================= */
+
+function escapeHTML(text) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.textContent =
+        text;
+
+    return div.innerHTML;
+
+}
+
+</script>
+
+
+</body>
+
+</html>
