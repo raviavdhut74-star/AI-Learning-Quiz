@@ -3,172 +3,617 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+```
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AI Learning</title>
+<title>AI Learning | AI Learning Hub</title>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+        background: #f8fafc;
+        color: #172033;
+        min-height: 100vh;
+    }
+
+    /* NAVBAR */
+
+    header {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 5%;
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(15px);
+        border-bottom: 1px solid #e5e7eb;
+        box-shadow: 0 8px 30px rgba(31,41,55,0.07);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .logo {
+        font-size: 22px;
+        font-weight: 800;
+        color: #6366f1;
+    }
+
+    .navbar {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .navbar a {
+        text-decoration: none;
+        color: #374151;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 10px 14px;
+        border-radius: 12px;
+        transition: 0.25s ease;
+    }
+
+    .navbar a:hover,
+    .navbar a.active {
+        color: #6366f1;
+        background: #eef2ff;
+    }
+
+    /* MAIN */
+
+    .learning-container {
+        max-width: 1100px;
+        margin: auto;
+        padding: 40px 20px 70px;
+    }
+
+    /* HERO */
+
+    .learning-hero {
+        padding: 42px;
+        border-radius: 28px;
+        background: linear-gradient(
+            135deg,
+            #6366f1,
+            #8b5cf6,
+            #a855f7
+        );
+        color: white;
+        box-shadow: 0 25px 55px rgba(99,102,241,0.25);
+        margin-bottom: 30px;
+    }
+
+    .hero-badge {
+        display: inline-block;
+        padding: 7px 13px;
+        border-radius: 50px;
+        background: rgba(255,255,255,0.18);
+        border: 1px solid rgba(255,255,255,0.25);
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+
+    .learning-hero h1 {
+        margin: 0;
+        font-size: 36px;
+    }
+
+    .learning-hero p {
+        max-width: 700px;
+        margin-top: 14px;
+        color: rgba(255,255,255,0.9);
+        font-size: 16px;
+        line-height: 1.7;
+    }
+
+    /* INPUT CARDS */
+
+    .learning-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 22px;
+    }
+
+    .learning-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 24px;
+        padding: 28px;
+        box-shadow: 0 12px 35px rgba(31,41,55,0.07);
+    }
+
+    .card-icon {
+        width: 58px;
+        height: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 17px;
+        font-size: 28px;
+        background: #eef2ff;
+        margin-bottom: 18px;
+    }
+
+    .learning-card h2 {
+        margin: 0 0 8px;
+        color: #111827;
+        font-size: 23px;
+    }
+
+    .learning-card p {
+        color: #6b7280;
+        line-height: 1.6;
+        font-size: 14px;
+    }
+
+    .topic-input {
+        width: 100%;
+        padding: 15px 17px;
+        border: 2px solid #e5e7eb;
+        border-radius: 14px;
+        font-size: 15px;
+        outline: none;
+        background: #f9fafb;
+        margin-top: 10px;
+    }
+
+    .topic-input:focus {
+        border-color: #6366f1;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+    }
+
+    .generate-btn {
+        width: 100%;
+        margin-top: 13px;
+        padding: 15px;
+        border: none;
+        border-radius: 14px;
+        background: linear-gradient(
+            135deg,
+            #6366f1,
+            #8b5cf6
+        );
+        color: white;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.25s ease;
+    }
+
+    .generate-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* RESULT */
+
+    #result {
+        margin-top: 30px;
+    }
+
+    .result-card {
+        background: white;
+        border-radius: 24px;
+        padding: 30px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 15px 40px rgba(31,41,55,0.08);
+    }
+
+    .result-title {
+        color: #111827;
+        font-size: 30px;
+        margin: 0 0 20px;
+    }
+
+    .section-box {
+        margin-top: 20px;
+        padding: 22px;
+        border-radius: 18px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+    }
+
+    .section-box h3 {
+        margin-top: 0;
+        color: #111827;
+    }
+
+    .summary-text {
+        font-size: 16px;
+        line-height: 1.9;
+        color: #374151;
+    }
+
+    .result-list {
+        margin: 0;
+        padding-left: 24px;
+    }
+
+    .result-list li {
+        margin-bottom: 12px;
+        color: #374151;
+        line-height: 1.7;
+    }
+
+    .example-box {
+        background: #faf5ff;
+    }
+
+    .exam-box {
+        background: #eef2ff;
+    }
+
+    .quiz-box {
+        margin-top: 25px;
+        padding: 24px;
+        border-radius: 20px;
+        background: linear-gradient(
+            135deg,
+            #eef2ff,
+            #f5f3ff
+        );
+    }
+
+    .quiz-box h3 {
+        margin-top: 0;
+    }
+
+    /* FEATURES */
+
+    .features-title {
+        margin: 38px 0 18px;
+        font-size: 22px;
+        color: #111827;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+    }
+
+    .feature-box {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        padding: 20px 15px;
+        text-align: center;
+    }
+
+    .feature-box span {
+        display: block;
+        font-size: 27px;
+        margin-bottom: 9px;
+    }
+
+    .feature-box strong {
+        font-size: 14px;
+        color: #374151;
+    }
+
+    /* LOADING */
+
+    .loading {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        margin: 0 auto 15px;
+        border: 4px solid #e5e7eb;
+        border-top: 4px solid #6366f1;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 800px) {
+
+        header {
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .navbar {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .learning-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .learning-hero {
+            padding: 30px 24px;
+        }
+
+        .learning-hero h1 {
+            font-size: 29px;
+        }
+
+        .features-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 500px) {
+
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .result-card {
+            padding: 22px;
+        }
+
+        .result-title {
+            font-size: 24px;
+        }
+    }
+
+</style>
+```
 
 </head>
 
-
 <body>
-
 
 <header>
 
-    <div class="logo">
-        AI Learning Hub
-    </div>
+```
+<div class="logo">
+    AI Learning Hub
+</div>
 
+<nav class="navbar">
 
-    <nav>
+    <a href="/learn" class="active">
+        📚 Learning
+    </a>
 
-        <a href="/">
-            Home
-        </a>
+    <a href="/quiz">
+        🧠 Quiz
+    </a>
 
-        <a href="/learn">
-            Learn
-        </a>
+    <a href="/profile">
+        👤 Profile
+    </a>
 
-        <a href="/quiz">
-            Quiz
-        </a>
+    <a href="/register">
+        📝 Register
+    </a>
 
-    </nav>
+</nav>
+```
 
 </header>
 
+<main class="learning-container">
 
-<main class="page">
+```
+<!-- HERO -->
 
-    <a href="/" class="back-btn">
-    ← Back to Home
-</a>
+<section class="learning-hero">
 
-    <div class="page-header">
-
-        <div class="badge">
-            📚 AI Tutor
-        </div>
-
-
-        <h1>
-            Learn Any Topic
-        </h1>
-
-
-        <p>
-            Enter a topic and AI will explain it
-            in a simple way.
-        </p>
-
+    <div class="hero-badge">
+        🤖 AI POWERED LEARNING
     </div>
 
+    <h1>
+        Learn Smarter with AI
+    </h1>
 
-    <div class="input-box">
+    <p>
+        Enter any topic and AI will create
+        a complete learning lesson with simple
+        explanation, important concepts,
+        examples and exam-focused points.
+    </p>
+
+</section>
+
+
+<!-- INPUT -->
+
+<section class="learning-grid">
+
+
+    <div class="learning-card">
+
+        <div class="card-icon">
+            📚
+        </div>
+
+        <h2>
+            AI Learning
+        </h2>
+
+        <p>
+            Enter a topic and let AI teach you
+            that topic in an easy-to-understand way.
+        </p>
 
         <input
             type="text"
             id="topic"
-            placeholder="Example: Artificial Intelligence"
+            class="topic-input"
+            placeholder="Example: Python, DBMS, Photosynthesis..."
         >
-
 
         <button
-            class="btn"
-            onclick="generateLearning()"
-        >
-            ✨ Generate Learning Material
+            class="generate-btn"
+            onclick="generateLearning()">
+
+            ✨ Generate Learning
+
         </button>
 
     </div>
 
 
-    <div
-        id="loading"
-        class="loading"
-        style="display:none;"
-    >
-        🤖 AI is preparing your learning material...
+    <div class="learning-card">
+
+        <div class="card-icon">
+            🧠
+        </div>
+
+        <h2>
+            AI Quiz
+        </h2>
+
+        <p>
+            Test your knowledge with AI-generated
+            MCQ questions.
+        </p>
+
+        <button
+            class="generate-btn"
+            onclick="startQuiz()">
+
+            🚀 Start Quiz
+
+        </button>
+
     </div>
 
 
-    <div
-        id="learningResult"
-    ></div>
+</section>
 
+
+<!-- AI RESULT -->
+
+<div id="result"></div>
+
+
+<!-- FEATURES -->
+
+<h2 class="features-title">
+    What You Can Do
+</h2>
+
+
+<section class="features-grid">
+
+    <div class="feature-box">
+        <span>📖</span>
+        <strong>Learn Any Topic</strong>
+    </div>
+
+    <div class="feature-box">
+        <span>🧠</span>
+        <strong>AI Generated Quiz</strong>
+    </div>
+
+    <div class="feature-box">
+        <span>📊</span>
+        <strong>Track Progress</strong>
+    </div>
+
+    <div class="feature-box">
+        <span>🏆</span>
+        <strong>Earn XP</strong>
+    </div>
+
+</section>
+```
 
 </main>
 
-
-<footer>
-
-    <p>
-        AI Learning Hub
-    </p>
-
-</footer>
-
-
 <script>
+
 
 async function generateLearning() {
 
-
-    const topic =
-        document
-        .getElementById("topic")
-        .value
-        .trim();
-
+    const topicInput =
+        document.getElementById("topic");
 
     const result =
-        document
-        .getElementById("learningResult");
+        document.getElementById("result");
 
 
-    const loading =
-        document
-        .getElementById("loading");
+    const topic =
+        topicInput.value.trim();
 
+
+    /* CHECK TOPIC */
 
     if (!topic) {
 
-        alert(
-            "Please enter a topic."
-        );
+        result.innerHTML = `
+
+            <div class="result-card">
+
+                <h3>
+                    ⚠️ Topic Required
+                </h3>
+
+                <p>
+                    Please enter a topic first.
+                </p>
+
+            </div>
+
+        `;
 
         return;
-
     }
 
 
-    loading.style.display =
-        "block";
+    /* LOADING */
 
-    result.innerHTML =
-        "";
+    result.innerHTML = `
+
+        <div class="result-card loading">
+
+            <div class="loading-spinner"></div>
+
+            <h3>
+                🤖 AI is teaching you...
+            </h3>
+
+            <p>
+                Creating a lesson about
+                <strong>
+                    ${escapeHTML(topic)}
+                </strong>
+            </p>
+
+        </div>
+
+    `;
 
 
     try {
 
+        /* SEND REQUEST TO FLASK */
 
         const response =
             await fetch(
                 "/generate-learning",
                 {
-
                     method: "POST",
 
                     headers: {
@@ -177,74 +622,297 @@ async function generateLearning() {
                     },
 
                     body: JSON.stringify({
-                        topic: topic
-                    })
 
+                        topic: topic,
+
+                        language: "English"
+
+                    })
                 }
             );
 
 
-        const data =
+        /* READ RESPONSE */
+
+        const responseData =
             await response.json();
 
+
+        console.log(
+            "AI Learning Response:",
+            responseData
+        );
+
+
+        /* CHECK SERVER ERROR */
 
         if (!response.ok) {
 
             throw new Error(
-                data.error ||
-                "Learning generation failed."
+                responseData.error ||
+                responseData.message ||
+                "Server error while generating learning."
             );
 
         }
 
 
-        const text =
-            data.result;
+        /* CHECK SUCCESS */
 
+        if (!responseData.success) {
+
+            throw new Error(
+                responseData.error ||
+                responseData.message ||
+                "AI could not generate the lesson."
+            );
+
+        }
+
+
+        /* GET AI DATA */
+
+        const learning =
+            responseData.data;
+
+
+        if (!learning) {
+
+            throw new Error(
+                "No learning content was returned by AI."
+            );
+
+        }
+
+
+        /* TITLE */
+
+        const title =
+            learning.title ||
+            topic;
+
+
+        /* SUMMARY */
+
+        const summary =
+            learning.summary ||
+            "No summary was generated.";
+
+
+        /* CONCEPTS */
+
+        const concepts =
+            Array.isArray(learning.concepts)
+            ? learning.concepts
+            : [];
+
+
+        /* EXAMPLES */
+
+        const examples =
+            Array.isArray(learning.examples)
+            ? learning.examples
+            : [];
+
+
+        /* KEY POINTS */
+
+        const keyPoints =
+            Array.isArray(learning.key_points)
+            ? learning.key_points
+            : [];
+
+
+        /* CONCEPT HTML */
+
+        let conceptsHTML = "";
+
+        if (concepts.length > 0) {
+
+            conceptsHTML = `
+
+                <div class="section-box">
+
+                    <h3>
+                        🧠 Important Concepts
+                    </h3>
+
+                    <ul class="result-list">
+
+                        ${concepts.map(
+                            item => `
+                                <li>
+                                    ${escapeHTML(item)}
+                                </li>
+                            `
+                        ).join("")}
+
+                    </ul>
+
+                </div>
+
+            `;
+
+        }
+
+
+        /* EXAMPLES HTML */
+
+        let examplesHTML = "";
+
+        if (examples.length > 0) {
+
+            examplesHTML = `
+
+                <div class="section-box example-box">
+
+                    <h3>
+                        💡 Examples
+                    </h3>
+
+                    <ul class="result-list">
+
+                        ${examples.map(
+                            item => `
+                                <li>
+                                    ${escapeHTML(item)}
+                                </li>
+                            `
+                        ).join("")}
+
+                    </ul>
+
+                </div>
+
+            `;
+
+        }
+
+
+        /* KEY POINTS HTML */
+
+        let keyPointsHTML = "";
+
+        if (keyPoints.length > 0) {
+
+            keyPointsHTML = `
+
+                <div class="section-box exam-box">
+
+                    <h3>
+                        📌 Important Points for Exam
+                    </h3>
+
+                    <ul class="result-list">
+
+                        ${keyPoints.map(
+                            item => `
+                                <li>
+                                    ${escapeHTML(item)}
+                                </li>
+                            `
+                        ).join("")}
+
+                    </ul>
+
+                </div>
+
+            `;
+
+        }
+
+
+        /* DISPLAY COMPLETE LESSON */
 
         result.innerHTML = `
 
-            <div class="ai-learning-card">
+            <div class="result-card">
 
-                <h2 class="topic-title">
-                    📚 ${escapeHTML(topic)}
+
+                <h2 class="result-title">
+
+                    📖 ${escapeHTML(title)}
+
                 </h2>
 
 
-                <div class="ai-output">
+                <!-- SUMMARY -->
 
-                    ${formatLearning(text)}
+                <div class="section-box">
+
+                    <h3>
+                        📚 Simple Explanation
+                    </h3>
+
+                    <p class="summary-text">
+
+                        ${escapeHTML(summary)}
+
+                    </p>
+
+                </div>
+
+
+                <!-- CONCEPTS -->
+
+                ${conceptsHTML}
+
+
+                <!-- EXAMPLES -->
+
+                ${examplesHTML}
+
+
+                <!-- KEY POINTS -->
+
+                ${keyPointsHTML}
+
+
+                <!-- QUIZ -->
+
+                <div class="quiz-box">
+
+                    <h3>
+                        🧠 Ready to Test Yourself?
+                    </h3>
+
+                    <p>
+                        Now take an AI-generated quiz
+                        based on this topic.
+                    </p>
+
+                    <button
+                        class="generate-btn"
+                        onclick="startQuiz()">
+
+                        🚀 Take Quiz on ${escapeHTML(topic)}
+
+                    </button>
 
                 </div>
 
-
-                <div class="learning-actions">
-
-                    <a
-                        href="/quiz"
-                        class="btn"
-                    >
-                        🧠 Generate Quiz
-                    </a>
-
-                </div>
 
             </div>
 
         `;
 
-
     }
 
+
     catch (error) {
+
+        console.error(
+            "AI Learning Error:",
+            error
+        );
 
 
         result.innerHTML = `
 
-            <div class="error-card">
+            <div class="result-card">
 
                 <h3>
-                    ❌ Something went wrong
+                    ❌ AI Learning Failed
                 </h3>
 
                 <p>
@@ -253,112 +921,93 @@ async function generateLearning() {
                     )}
                 </p>
 
+                <p style="
+                    color:#6b7280;
+                    margin-top:12px;
+                ">
+
+                    Please check your Gemini API
+                    connection and Flask terminal.
+
+                </p>
+
             </div>
 
         `;
 
     }
 
+}
 
-    finally {
 
-        loading.style.display =
-            "none";
+/* START QUIZ */
+
+function startQuiz() {
+
+    const topic =
+        document
+        .getElementById("topic")
+        .value
+        .trim();
+
+
+    if (!topic) {
+
+        alert(
+            "Please enter a topic first."
+        );
+
+        return;
 
     }
 
-}
 
-
-/* =================================
-   FORMAT AI LEARNING
-   ================================= */
-
-function formatLearning(text) {
-
-
-    let html =
-        escapeHTML(text);
-
-
-    html =
-        html.replace(
-            /💡 SIMPLE EXPLANATION/gi,
-            '<div class="ai-section explanation"><h3>💡 Simple Explanation</h3>'
-        );
-
-
-    html =
-        html.replace(
-            /🔑 KEY POINTS/gi,
-            '</div><div class="ai-section keypoints"><h3>🔑 Key Points</h3>'
-        );
-
-
-    html =
-        html.replace(
-            /🌍 REAL-LIFE EXAMPLE/gi,
-            '</div><div class="ai-section example"><h3>🌍 Real-Life Example</h3>'
-        );
-
-
-    html =
-        html.replace(
-            /📖 IMPORTANT TERMS/gi,
-            '</div><div class="ai-section terms"><h3>📖 Important Terms</h3>'
-        );
-
-
-    html =
-        html.replace(
-            /⚡ QUICK SUMMARY/gi,
-            '</div><div class="ai-section summary"><h3>⚡ Quick Summary</h3>'
-        );
-
-
-    html =
-        html.replace(
-            /✓/g,
-            '<br>✓ '
-        );
-
-
-    html =
-        html.replace(
-            /\n/g,
-            '<br>'
-        );
-
-
-    html +=
-        '</div>';
-
-
-    return html;
+    window.location.href =
+        "/quiz?topic=" +
+        encodeURIComponent(topic);
 
 }
 
 
-/* =================================
-   ESCAPE HTML
-   ================================= */
+/* SAFE HTML */
 
 function escapeHTML(text) {
 
     const div =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
+
 
     div.textContent =
-        text;
+        text === null ||
+        text === undefined
+            ? ""
+            : String(text);
+
 
     return div.innerHTML;
 
 }
 
-</script>
 
+/* ENTER KEY SUPPORT */
+
+document
+    .getElementById("topic")
+    .addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                generateLearning();
+
+            }
+
+        }
+    );
+
+
+</script>
 
 </body>
 

@@ -1,24 +1,843 @@
+```html
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AI Quiz Generator</title>
+    <title>AI Quiz Generator | AI Learning Hub</title>
 
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
+    <style>
 
+        body {
+            margin: 0;
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
+
+            background:
+                radial-gradient(circle at top left, rgba(99,102,241,.18), transparent 35%),
+                radial-gradient(circle at bottom right, rgba(168,85,247,.16), transparent 35%),
+                #f7f8fc;
+
+            color: #172033;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 16px 6%;
+
+            background: rgba(255,255,255,.88);
+            backdrop-filter: blur(18px);
+
+            border-bottom: 1px solid rgba(229,231,235,.8);
+
+            box-shadow: 0 8px 30px rgba(31,41,55,.06);
+        }
+
+        .logo {
+            font-size: 21px;
+            font-weight: 800;
+
+            background: linear-gradient(
+                135deg,
+                #6366f1,
+                #a855f7
+            );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .navbar {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: #4b5563;
+
+            padding: 10px 15px;
+            border-radius: 12px;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            transition: .25s ease;
+        }
+
+        .navbar a:hover {
+            background: #eef2ff;
+            color: #4f46e5;
+            transform: translateY(-2px);
+        }
+
+        .page {
+            position: relative;
+
+            max-width: 1050px;
+            margin: auto;
+
+            padding: 60px 20px 80px;
+        }
+
+        .back-btn {
+            position: absolute;
+
+            top: 25px;
+            left: 20px;
+
+            width: 44px;
+            height: 44px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: white;
+            color: #6366f1;
+
+            text-decoration: none;
+
+            font-size: 23px;
+            font-weight: 800;
+
+            border: 1px solid #e5e7eb;
+
+            box-shadow: 0 8px 25px rgba(99,102,241,.15);
+
+            transition: .25s ease;
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(
+                135deg,
+                #6366f1,
+                #a855f7
+            );
+
+            color: white;
+
+            transform: translateX(-4px) scale(1.06);
+        }
+
+        .page-header {
+            text-align: center;
+
+            max-width: 760px;
+
+            margin: 20px auto 35px;
+        }
+
+        .badge {
+            display: inline-flex;
+
+            align-items: center;
+            gap: 7px;
+
+            padding: 9px 16px;
+
+            border-radius: 999px;
+
+            background: #eef2ff;
+            color: #4f46e5;
+
+            font-size: 14px;
+            font-weight: 800;
+
+            margin-bottom: 15px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+
+            font-size: clamp(34px, 6vw, 58px);
+
+            line-height: 1.05;
+
+            font-weight: 900;
+
+            background: linear-gradient(
+                135deg,
+                #312e81,
+                #6366f1,
+                #a855f7
+            );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-header p {
+            margin-top: 17px;
+
+            color: #6b7280;
+
+            font-size: 17px;
+            line-height: 1.6;
+        }
+
+        .input-box {
+            max-width: 900px;
+
+            margin: 30px auto;
+
+            padding: 26px;
+
+            background: rgba(255,255,255,.88);
+
+            border: 1px solid rgba(229,231,235,.9);
+
+            border-radius: 24px;
+
+            box-shadow: 0 20px 55px rgba(31,41,55,.08);
+        }
+
+        .input-box::before {
+            content: "🎯  What do you want to practice?";
+
+            display: block;
+
+            margin-bottom: 12px;
+
+            color: #374151;
+
+            font-weight: 800;
+
+            font-size: 16px;
+        }
+
+        .input-box input {
+            width: 100%;
+
+            box-sizing: border-box;
+
+            padding: 18px 20px;
+
+            border: 2px solid #e5e7eb;
+
+            border-radius: 16px;
+
+            background: #fff;
+
+            font-size: 16px;
+
+            color: #172033;
+
+            outline: none;
+
+            transition: .25s ease;
+        }
+
+        .input-box input:focus {
+            border-color: #6366f1;
+
+            box-shadow:
+                0 0 0 4px rgba(99,102,241,.12);
+
+            transform: translateY(-1px);
+        }
+
+        .question-selector {
+            max-width: 900px;
+
+            margin: 30px auto;
+
+            padding: 30px;
+
+            text-align: center;
+
+            background: white;
+
+            border-radius: 26px;
+
+            border: 1px solid #e5e7eb;
+
+            box-shadow:
+                0 20px 55px rgba(31,41,55,.08);
+        }
+
+        .question-selector h2 {
+            margin: 0;
+
+            font-size: 25px;
+
+            color: #1f2937;
+        }
+
+        .question-selector > p {
+            color: #6b7280;
+
+            margin-top: 8px;
+        }
+
+        .question-buttons {
+            display: grid;
+
+            grid-template-columns:
+                repeat(5, 1fr);
+
+            gap: 12px;
+
+            margin: 25px 0;
+        }
+
+        .question-count {
+            border: none;
+
+            padding: 14px 10px;
+
+            border-radius: 14px;
+
+            background: #f3f4f6;
+
+            color: #374151;
+
+            font-size: 15px;
+
+            font-weight: 800;
+
+            cursor: pointer;
+
+            transition: .25s ease;
+        }
+
+        .question-count:hover {
+            background: #e0e7ff;
+
+            color: #4f46e5;
+
+            transform: translateY(-3px);
+        }
+
+        .question-count.active {
+            background: linear-gradient(
+                135deg,
+                #6366f1,
+                #8b5cf6
+            );
+
+            color: white;
+
+            box-shadow:
+                0 10px 25px rgba(99,102,241,.3);
+
+            transform: translateY(-2px);
+        }
+
+        .selected-count {
+            display: inline-block;
+
+            padding: 10px 18px;
+
+            border-radius: 999px;
+
+            background: #f5f3ff;
+
+            color: #6d28d9;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            margin-bottom: 20px;
+        }
+
+        .selected-count strong {
+            font-size: 17px;
+        }
+
+        .btn {
+            border: none;
+
+            border-radius: 15px;
+
+            padding: 16px 28px;
+
+            font-size: 16px;
+
+            font-weight: 800;
+
+            color: white;
+
+            background: linear-gradient(
+                135deg,
+                #6366f1,
+                #8b5cf6
+            );
+
+            cursor: pointer;
+
+            box-shadow:
+                0 12px 30px rgba(99,102,241,.28);
+
+            transition: .25s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+
+            box-shadow:
+                0 17px 35px rgba(99,102,241,.35);
+        }
+
+        .btn:active {
+            transform: scale(.97);
+        }
+
+        .generate-btn {
+            min-width: 260px;
+        }
+
+        .retest-btn {
+            margin-top: 20px;
+
+            background: linear-gradient(
+                135deg,
+                #f97316,
+                #ef4444
+            );
+
+            box-shadow:
+                0 12px 30px rgba(239,68,68,.25);
+        }
+
+        .retest-btn:hover {
+            box-shadow:
+                0 17px 35px rgba(239,68,68,.32);
+        }
+
+        .loading {
+            max-width: 650px;
+
+            margin: 35px auto;
+
+            padding: 25px;
+
+            text-align: center;
+
+            border-radius: 20px;
+
+            background: white;
+
+            color: #6366f1;
+
+            font-weight: 800;
+
+            box-shadow: 0 15px 40px rgba(31,41,55,.08);
+
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,100% {
+                opacity: .65;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+        }
+
+        #quizContainer {
+            margin-top: 35px;
+        }
+
+        .quiz-card {
+            position: relative;
+
+            margin: 24px auto;
+
+            padding: 30px;
+
+            max-width: 900px;
+
+            background: white;
+
+            border-radius: 25px;
+
+            border: 1px solid #e5e7eb;
+
+            box-shadow:
+                0 15px 45px rgba(31,41,55,.08);
+
+            transition: .25s ease;
+        }
+
+        .quiz-card:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 20px 55px rgba(31,41,55,.12);
+        }
+
+        .question-number {
+            display: inline-block;
+
+            padding: 7px 13px;
+
+            border-radius: 999px;
+
+            background: #eef2ff;
+
+            color: #4f46e5;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            margin-bottom: 15px;
+        }
+
+        .quiz-card h2 {
+            margin: 0 0 22px;
+
+            font-size: 20px;
+
+            line-height: 1.5;
+
+            color: #1f2937;
+        }
+
+        .options {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 13px;
+        }
+
+        .option {
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+
+            padding: 17px 18px;
+
+            border: 2px solid #e5e7eb;
+
+            border-radius: 16px;
+
+            background: #fafafa;
+
+            cursor: pointer;
+
+            transition: .25s ease;
+        }
+
+        .option:hover {
+            border-color: #a5b4fc;
+
+            background: #eef2ff;
+
+            transform: translateX(4px);
+        }
+
+        .option input {
+            width: 19px;
+            height: 19px;
+
+            accent-color: #6366f1;
+
+            cursor: pointer;
+
+            flex-shrink: 0;
+        }
+
+        .option span {
+            font-size: 15px;
+
+            line-height: 1.5;
+
+            color: #374151;
+        }
+
+        .option:has(input:checked) {
+            border-color: #6366f1;
+
+            background: #eef2ff;
+
+            box-shadow:
+                0 6px 18px rgba(99,102,241,.12);
+        }
+
+        .option:has(input:checked) span {
+            color: #4338ca;
+
+            font-weight: 700;
+        }
+
+        .submit-area {
+            max-width: 900px;
+
+            margin: 35px auto;
+
+            text-align: center;
+
+            padding: 10px;
+        }
+
+        .submit-area .btn {
+            min-width: 250px;
+        }
+
+        #result {
+            max-width: 900px;
+
+            margin: 40px auto;
+        }
+
+        .result-card {
+            padding: 38px;
+
+            background: white;
+
+            border-radius: 28px;
+
+            text-align: center;
+
+            border: 1px solid #e5e7eb;
+
+            box-shadow:
+                0 20px 60px rgba(31,41,55,.1);
+        }
+
+        .result-card h1 {
+            margin-top: 0;
+
+            color: #312e81;
+
+            font-size: 30px;
+        }
+
+        .result-card h2 {
+            color: #6366f1;
+        }
+
+        .score {
+            margin: 25px auto 10px;
+
+            font-size: 55px;
+
+            font-weight: 900;
+
+            color: #4f46e5;
+        }
+
+        .percentage {
+            font-size: 25px;
+
+            font-weight: 800;
+
+            color: #16a34a;
+
+            margin-bottom: 12px;
+        }
+
+        .result-card hr {
+            border: none;
+
+            border-top: 1px solid #e5e7eb;
+
+            margin: 35px 0;
+        }
+
+        .answer-review {
+            text-align: left;
+
+            padding: 22px;
+
+            margin: 16px 0;
+
+            border-radius: 18px;
+
+            border: 1px solid #e5e7eb;
+        }
+
+        .answer-review h3 {
+            margin-top: 0;
+
+            font-size: 17px;
+        }
+
+        .answer-review p {
+            color: #4b5563;
+
+            line-height: 1.6;
+
+            margin: 8px 0;
+        }
+
+        .correct-answer {
+            background: #f0fdf4;
+
+            border-left: 5px solid #22c55e;
+        }
+
+        .correct-answer h3 {
+            color: #15803d;
+        }
+
+        .wrong-answer {
+            background: #fff7ed;
+
+            border-left: 5px solid #f97316;
+        }
+
+        .wrong-answer h3 {
+            color: #c2410c;
+        }
+
+        .retest-box {
+            margin-top: 30px;
+
+            padding: 25px;
+
+            border-radius: 20px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fff7ed,
+                    #fff1f2
+                );
+
+            border: 1px solid #fed7aa;
+        }
+
+        .retest-box h3 {
+            margin-top: 0;
+
+            color: #c2410c;
+        }
+
+        .retest-box p {
+            color: #6b7280;
+
+            line-height: 1.6;
+        }
+
+        .error-card {
+            max-width: 700px;
+
+            margin: 30px auto;
+
+            padding: 25px;
+
+            border-radius: 20px;
+
+            background: #fff1f2;
+
+            border: 1px solid #fecdd3;
+
+            color: #9f1239;
+        }
+
+        footer {
+            text-align: center;
+
+            padding: 35px 20px;
+
+            color: #6b7280;
+
+            background: white;
+
+            border-top: 1px solid #e5e7eb;
+        }
+
+        footer p {
+            margin: 5px;
+        }
+
+        @media (max-width: 700px) {
+
+            header {
+                padding: 14px 16px;
+
+                flex-direction: column;
+
+                gap: 10px;
+            }
+
+            .navbar {
+                flex-wrap: wrap;
+
+                justify-content: center;
+            }
+
+            .navbar a {
+                padding: 8px 10px;
+
+                font-size: 13px;
+            }
+
+            .page {
+                padding: 45px 14px 60px;
+            }
+
+            .back-btn {
+                top: 15px;
+                left: 14px;
+
+                width: 40px;
+                height: 40px;
+            }
+
+            .page-header {
+                margin-top: 25px;
+            }
+
+            .page-header h1 {
+                font-size: 38px;
+            }
+
+            .input-box,
+            .question-selector,
+            .quiz-card,
+            .result-card {
+                padding: 22px;
+            }
+
+            .question-buttons {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .generate-btn {
+                width: 100%;
+
+                min-width: 0;
+            }
+
+            .score {
+                font-size: 45px;
+            }
+
+            .retest-btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
 </head>
 
 
@@ -31,19 +850,18 @@
         AI Learning Hub
     </div>
 
-
-    <nav>
-
-        <a href="/">
-            Home
-        </a>
+    <nav class="navbar">
 
         <a href="/learn">
-            Learn
+            📚 Learning
         </a>
 
         <a href="/quiz">
-            Quiz
+            🧠 Quiz
+        </a>
+
+        <a href="/profile">
+            👤 Profile
         </a>
 
     </nav>
@@ -55,37 +873,27 @@
 
 
     <a href="/" class="back-btn">
-    ← Back to Home
-</a>
+        ←
+    </a>
 
-
-    <!-- ==================================
-         HEADER
-         ================================== -->
 
     <div class="page-header">
 
         <div class="badge">
-            🧠 AI Quiz Generator
+            🧠 AI Powered Quiz
         </div>
-
 
         <h1>
             Test Your Knowledge
         </h1>
 
-
         <p>
-            Enter a topic and choose how many
-            questions you want.
+            Enter any topic, choose your quiz length,
+            and let AI create a personalized MCQ quiz for you.
         </p>
 
     </div>
 
-
-    <!-- ==================================
-         TOPIC
-         ================================== -->
 
     <div class="input-box">
 
@@ -98,105 +906,68 @@
     </div>
 
 
-    <!-- ==================================
-         QUESTION COUNT
-         ================================== -->
-
     <div class="question-selector">
-
 
         <h2>
             📋 Choose Number of Questions
         </h2>
 
-
         <p>
-            Select your quiz length
+            Select how many questions you want to practice
         </p>
 
 
         <div class="question-buttons">
 
-
-            <button
-                class="question-count active"
-                onclick="selectQuestionCount(5, this)"
-            >
+            <button class="question-count active"
+                    onclick="selectQuestionCount(5, this)">
                 5
             </button>
 
-
-            <button
-                class="question-count"
-                onclick="selectQuestionCount(10, this)"
-            >
+            <button class="question-count"
+                    onclick="selectQuestionCount(10, this)">
                 10
             </button>
 
-
-            <button
-                class="question-count"
-                onclick="selectQuestionCount(15, this)"
-            >
+            <button class="question-count"
+                    onclick="selectQuestionCount(15, this)">
                 15
             </button>
 
-
-            <button
-                class="question-count"
-                onclick="selectQuestionCount(20, this)"
-            >
+            <button class="question-count"
+                    onclick="selectQuestionCount(20, this)">
                 20
             </button>
 
-
-            <button
-                class="question-count"
-                onclick="selectQuestionCount(25, this)"
-            >
+            <button class="question-count"
+                    onclick="selectQuestionCount(25, this)">
                 25
             </button>
 
-
-            <button
-                class="question-count"
-                onclick="selectQuestionCount(30, this)"
-            >
+            <button class="question-count"
+                    onclick="selectQuestionCount(30, this)">
                 30
             </button>
 
-
-            <button
-                class="question-count"
-                onclick="selectQuestionCount(35, this)"
-            >
+            <button class="question-count"
+                    onclick="selectQuestionCount(35, this)">
                 35
             </button>
 
-
-            <button
-                class="question-count"
-                onclick="selectQuestionCount(40, this)"
-            >
+            <button class="question-count"
+                    onclick="selectQuestionCount(40, this)">
                 40
             </button>
 
-
-            <button
-                class="question-count"
-                onclick="selectQuestionCount(45, this)"
-            >
+            <button class="question-count"
+                    onclick="selectQuestionCount(45, this)">
                 45
             </button>
 
-
-            <button
-                class="question-count"
-                onclick="selectQuestionCount(50, this)"
-            >
+            <button class="question-count"
+                    onclick="selectQuestionCount(50, this)">
                 50
             </button>
-
 
         </div>
 
@@ -213,58 +984,47 @@
 
         </div>
 
+        <br>
+
 
         <button
             class="btn generate-btn"
-            onclick="generateQuiz()"
-        >
+            onclick="generateQuiz()">
 
             🤖 Generate 5 Questions
 
         </button>
 
-
     </div>
 
-
-    <!-- ==================================
-         LOADING
-         ================================== -->
 
     <div
         id="loading"
         class="loading"
-        style="display:none;"
-    >
+        style="display:none;">
 
         🤖 AI is creating your quiz...
+
+        <br>
+
+        <small>
+            Please wait a moment.
+        </small>
 
     </div>
 
 
-    <!-- ==================================
-         QUIZ
-         ================================== -->
+    <div id="quizContainer"></div>
 
-    <div
-        id="quizContainer"
-    ></div>
-
-
-    <!-- ==================================
-         SUBMIT
-         ================================== -->
 
     <div
         id="submitArea"
         class="submit-area"
-        style="display:none;"
-    >
+        style="display:none;">
 
         <button
             class="btn"
-            onclick="submitQuiz()"
-        >
+            onclick="submitQuiz()">
 
             ✅ Submit Quiz
 
@@ -272,10 +1032,6 @@
 
     </div>
 
-
-    <!-- ==================================
-         RESULT
-         ================================== -->
 
     <div id="result"></div>
 
@@ -286,7 +1042,7 @@
 <footer>
 
     <p>
-        AI Learning Hub
+        <strong>AI Learning Hub</strong>
     </p>
 
     <p>
@@ -299,236 +1055,314 @@
 <script>
 
 
-// ==========================================
-// GLOBAL VARIABLES
-// ==========================================
+/* ==========================================
+   GLOBAL VARIABLES
+========================================== */
 
 let quizQuestions = [];
 
 let selectedQuestionCount = 5;
 
-
-// ==========================================
-// SELECT QUESTION COUNT
-// ==========================================
-
-function selectQuestionCount(
-    count,
-    button
-) {
-
-    selectedQuestionCount =
-        count;
+let currentAttemptId = null;
 
 
-    // Remove active from all
+/* ==========================================
+   QUESTION COUNT
+========================================== */
+
+function selectQuestionCount(count, button) {
+
+    selectedQuestionCount = count;
+
+
     document
-        .querySelectorAll(
-            ".question-count"
-        )
-        .forEach(
-            function(btn) {
+        .querySelectorAll(".question-count")
+        .forEach(function(btn) {
 
-                btn.classList.remove(
-                    "active"
-                );
+            btn.classList.remove("active");
 
-            }
-        );
+        });
 
 
-    // Add active
-    button.classList.add(
-        "active"
-    );
+    button.classList.add("active");
 
 
-    // Show selected number
     document
-        .getElementById(
-            "selectedCount"
-        )
+        .getElementById("selectedCount")
+        .textContent = count;
+
+
+    document
+        .querySelector(".generate-btn")
         .textContent =
-        count;
+        "🤖 Generate " + count + " Questions";
 
-
-    // Change generate button
-    document
-        .querySelector(
-            ".generate-btn"
-        )
-        .textContent =
-        "🤖 Generate "
-        + count
-        + " Questions";
 }
 
 
-// ==========================================
-// GENERATE QUIZ
-// ==========================================
+/* ==========================================
+   GENERATE QUIZ
+========================================== */
 
 async function generateQuiz() {
 
-
-    const topic =
-        document
-        .getElementById(
-            "quizTopic"
-        )
-        .value
-        .trim();
+    const studentId =
+        localStorage.getItem("student_id");
 
 
-    const loading =
-        document
-        .getElementById(
-            "loading"
-        );
-
-
-    const container =
-        document
-        .getElementById(
-            "quizContainer"
-        );
-
-
-    const submitArea =
-        document
-        .getElementById(
-            "submitArea"
-        );
-
-
-    const result =
-        document
-        .getElementById(
-            "result"
-        );
-
-
-    // Check topic
-    if (!topic) {
+    if (!studentId) {
 
         alert(
-            "Please enter a topic."
+            "Please login as a student before starting the quiz."
         );
+
+        window.location.href = "/login";
 
         return;
     }
 
 
-    // Loading
-    loading.style.display =
-        "block";
+    const topic =
+        document
+            .getElementById("quizTopic")
+            .value
+            .trim();
 
 
-    container.innerHTML =
-        "";
+    const loading =
+        document.getElementById("loading");
 
 
-    result.innerHTML =
-        "";
+    const container =
+        document.getElementById("quizContainer");
 
 
-    submitArea.style.display =
-        "none";
+    const submitArea =
+        document.getElementById("submitArea");
+
+
+    const result =
+        document.getElementById("result");
+
+
+    if (!topic) {
+
+        alert("Please enter a topic.");
+
+        return;
+    }
+
+
+    loading.style.display = "block";
+
+    container.innerHTML = "";
+
+    result.innerHTML = "";
+
+    submitArea.style.display = "none";
+
+    currentAttemptId = null;
 
 
     try {
 
-
-        // Send topic + question count
         const response =
             await fetch(
                 "/generate-quiz",
                 {
-
-                    method:
-                        "POST",
+                    method: "POST",
 
                     headers: {
-
                         "Content-Type":
                             "application/json"
-
                     },
 
-                    body:
-                        JSON.stringify({
+                    body: JSON.stringify({
 
-                            topic:
-                                topic,
+                        topic: topic,
 
-                            question_count:
-                                selectedQuestionCount
+                        count:
+                            selectedQuestionCount,
 
-                        })
+                        language:
+                            "English"
 
+                    })
                 }
             );
+
+
+        const contentType =
+            response.headers.get("content-type");
+
+
+        if (
+            !contentType ||
+            !contentType.includes("application/json")
+        ) {
+
+            const text =
+                await response.text();
+
+            console.error(
+                "Server returned:",
+                text
+            );
+
+            throw new Error(
+                "Server did not return JSON. Check Flask terminal."
+            );
+        }
 
 
         const data =
             await response.json();
 
 
-        // Server error
-        if (!response.ok) {
+        if (!data.success) {
 
             throw new Error(
+                data.message ||
                 data.error ||
                 "Quiz generation failed."
             );
-
         }
 
 
-        // Get questions
         quizQuestions =
             data.questions;
 
 
-        // Validate
         if (
-            !Array.isArray(
-                quizQuestions
-            )
-            ||
+            !Array.isArray(quizQuestions) ||
             quizQuestions.length === 0
         ) {
 
             throw new Error(
-                "AI did not return questions."
+                "AI did not return valid questions."
             );
+        }
+
+
+        /* ======================================
+           VALIDATE NEW QUIZ FORMAT
+        ====================================== */
+
+        for (
+            let i = 0;
+            i < quizQuestions.length;
+            i++
+        ) {
+
+            const q =
+                quizQuestions[i];
+
+
+            if (
+                !q.question ||
+                !Array.isArray(q.options) ||
+                q.options.length !== 4 ||
+                !q.correct_answer
+            ) {
+
+                throw new Error(
+                    "Quiz question format is invalid."
+                );
+            }
+
+
+            if (
+                !q.options.includes(
+                    q.correct_answer
+                )
+            ) {
+
+                throw new Error(
+                    "Correct answer does not match the options."
+                );
+            }
 
         }
 
 
-        // Display
+        /* ======================================
+           START DATABASE ATTEMPT
+        ====================================== */
+
+        const attemptResponse =
+            await fetch(
+                "/api/attempt/start",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        student_id:
+                            Number(studentId),
+
+                        topic:
+                            topic,
+
+                        total_questions:
+                            quizQuestions.length
+
+                    })
+                }
+            );
+
+
+        const attemptData =
+            await attemptResponse.json();
+
+
+        if (!attemptResponse.ok) {
+
+            throw new Error(
+                attemptData.message ||
+                attemptData.error ||
+                "Could not start quiz attempt."
+            );
+        }
+
+
+        currentAttemptId =
+            attemptData.attempt_id;
+
+
+        console.log(
+            "Quiz attempt started:",
+            currentAttemptId
+        );
+
+
         displayQuiz();
 
 
-        // Show submit
-        submitArea.style.display =
-            "block";
+        submitArea.style.display = "block";
 
 
-        // Scroll
         window.scrollTo({
 
             top: 450,
 
-            behavior:
-                "smooth"
+            behavior: "smooth"
 
         });
 
-
     }
 
+
     catch (error) {
+
+        console.error(
+            "QUIZ ERROR:",
+            error
+        );
 
 
         result.innerHTML = `
@@ -539,11 +1373,12 @@ async function generateQuiz() {
                     ❌ Quiz Generation Failed
                 </h3>
 
-
                 <p>
-                    ${escapeHTML(
-                        error.message
-                    )}
+                    ${escapeHTML(error.message)}
+                </p>
+
+                <p style="margin-top:15px;">
+                    Please check the Flask terminal for the actual error.
                 </p>
 
             </div>
@@ -555,24 +1390,21 @@ async function generateQuiz() {
 
     finally {
 
-        loading.style.display =
-            "none";
+        loading.style.display = "none";
 
     }
 
 }
 
 
-// ==========================================
-// DISPLAY QUIZ
-// ==========================================
+/* ==========================================
+   DISPLAY QUIZ
+========================================== */
 
 function displayQuiz() {
 
-
     const container =
-        document
-        .getElementById(
+        document.getElementById(
             "quizContainer"
         );
 
@@ -581,24 +1413,17 @@ function displayQuiz() {
 
 
     quizQuestions.forEach(
-        function(
-            question,
-            index
-        ) {
-
+        function(question, index) {
 
             html += `
 
                 <div class="quiz-card">
 
-
                     <div class="question-number">
 
-                        Question
-                        ${index + 1}
+                        Question ${index + 1}
 
                     </div>
-
 
                     <h2>
 
@@ -608,23 +1433,16 @@ function displayQuiz() {
 
                     </h2>
 
-
                     <div class="options">
-
             `;
 
 
             question.options.forEach(
-                function(
-                    option,
-                    optionIndex
-                ) {
-
+                function(option, optionIndex) {
 
                     html += `
 
                         <label class="option">
-
 
                             <input
                                 type="radio"
@@ -632,15 +1450,9 @@ function displayQuiz() {
                                 value="${optionIndex}"
                             >
 
-
                             <span>
-
-                                ${escapeHTML(
-                                    option
-                                )}
-
+                                ${escapeHTML(option)}
                             </span>
-
 
                         </label>
 
@@ -662,17 +1474,41 @@ function displayQuiz() {
     );
 
 
-    container.innerHTML =
-        html;
+    container.innerHTML = html;
 
 }
 
 
-// ==========================================
-// SUBMIT QUIZ
-// ==========================================
+/* ==========================================
+   SUBMIT QUIZ
+========================================== */
 
-function submitQuiz() {
+async function submitQuiz() {
+
+    const studentId =
+        localStorage.getItem("student_id");
+
+
+    if (!studentId) {
+
+        alert(
+            "Please login as a student before submitting the quiz."
+        );
+
+        window.location.href = "/login";
+
+        return;
+    }
+
+
+    if (!currentAttemptId) {
+
+        alert(
+            "Quiz attempt was not started. Please generate the quiz again."
+        );
+
+        return;
+    }
 
 
     let score = 0;
@@ -681,13 +1517,15 @@ function submitQuiz() {
 
     let reviewHTML = "";
 
+    const answersForDatabase = [];
+
+
+    /* ==========================================
+       CHECK EACH QUESTION
+    ========================================== */
 
     quizQuestions.forEach(
-        function(
-            question,
-            index
-        ) {
-
+        function(question, index) {
 
             const selected =
                 document.querySelector(
@@ -695,7 +1533,6 @@ function submitQuiz() {
                 );
 
 
-            // No answer
             if (!selected) {
 
                 unanswered++;
@@ -705,56 +1542,70 @@ function submitQuiz() {
             }
 
 
-            const selectedAnswer =
-                Number(
-                    selected.value
-                );
-
-
-            const correctAnswer =
-                Number(
-                    question.answer
-                );
+            const selectedIndex =
+                Number(selected.value);
 
 
             const selectedText =
-                question.options[
-                    selectedAnswer
-                ];
+                question.options[selectedIndex];
 
 
             const correctText =
-                question.options[
-                    correctAnswer
-                ];
+                String(
+                    question.correct_answer
+                ).trim();
 
 
-            // ==================================
-            // CORRECT
-            // ==================================
+            const selectedNormalized =
+                normalizeAnswer(
+                    selectedText
+                );
 
-            if (
-                selectedAnswer ===
-                correctAnswer
-            ) {
 
+            const correctNormalized =
+                normalizeAnswer(
+                    correctText
+                );
+
+
+            const isCorrect =
+                selectedNormalized ===
+                correctNormalized;
+
+
+            answersForDatabase.push({
+
+                question:
+                    question.question,
+
+                selected_answer:
+                    selectedText,
+
+                correct_answer:
+                    correctText,
+
+                topic:
+                    document
+                        .getElementById("quizTopic")
+                        .value
+                        .trim()
+
+            });
+
+
+            if (isCorrect) {
 
                 score++;
 
 
                 reviewHTML += `
 
-                    <div
-                        class="answer-review correct-answer"
-                    >
+                    <div class="answer-review correct-answer">
 
                         <h3>
-
                             Q${index + 1}
                             ✅ Correct
-
                         </h3>
-
 
                         <p>
 
@@ -767,60 +1618,6 @@ function submitQuiz() {
                             )}
 
                         </p>
-
-
-                        <p>
-
-                            <strong>
-                                Explanation:
-                            </strong>
-
-                            ${escapeHTML(
-                                question.explanation
-                            )}
-
-                        </p>
-
-                    </div>
-
-                `;
-
-            }
-
-
-            // ==================================
-            // WRONG
-            // ==================================
-
-            else {
-
-
-                reviewHTML += `
-
-                    <div
-                        class="answer-review wrong-answer"
-                    >
-
-                        <h3>
-
-                            Q${index + 1}
-                            ❌ Wrong
-
-                        </h3>
-
-
-                        <p>
-
-                            <strong>
-                                Your Answer:
-                            </strong>
-
-                            ${escapeHTML(
-                                selectedText
-                            )}
-
-                        </p>
-
 
                         <p>
 
@@ -834,6 +1631,60 @@ function submitQuiz() {
 
                         </p>
 
+                        <p>
+
+                            <strong>
+                                Explanation:
+                            </strong>
+
+                            ${escapeHTML(
+                                question.explanation ||
+                                "Your answer matches the correct answer."
+                            )}
+
+                        </p>
+
+                    </div>
+
+                `;
+
+            }
+
+
+            else {
+
+                reviewHTML += `
+
+                    <div class="answer-review wrong-answer">
+
+                        <h3>
+                            Q${index + 1}
+                            ❌ Wrong
+                        </h3>
+
+                        <p>
+
+                            <strong>
+                                Your Answer:
+                            </strong>
+
+                            ${escapeHTML(
+                                selectedText
+                            )}
+
+                        </p>
+
+                        <p>
+
+                            <strong>
+                                Correct Answer:
+                            </strong>
+
+                            ${escapeHTML(
+                                correctText
+                            )}
+
+                        </p>
 
                         <p>
 
@@ -842,7 +1693,8 @@ function submitQuiz() {
                             </strong>
 
                             ${escapeHTML(
-                                question.explanation
+                                question.explanation ||
+                                "Review the correct answer and explanation."
                             )}
 
                         </p>
@@ -857,28 +1709,21 @@ function submitQuiz() {
     );
 
 
-    // ==================================
-    // UNANSWERED
-    // ==================================
+    /* ==========================================
+       CHECK UNANSWERED
+    ========================================== */
 
-    if (
-        unanswered > 0
-    ) {
+    if (unanswered > 0) {
 
         alert(
-            "Please answer all "
-            + quizQuestions.length
-            + " questions first."
+            "Please answer all " +
+            quizQuestions.length +
+            " questions first."
         );
 
         return;
-
     }
 
-
-    // ==================================
-    // SCORE
-    // ==================================
 
     const total =
         quizQuestions.length;
@@ -886,28 +1731,106 @@ function submitQuiz() {
 
     const percentage =
         Math.round(
-            (
-                score /
-                total
-            ) * 100
+            (score / total) * 100
         );
 
+
+    /* ==========================================
+       SAVE RESULT TO DATABASE
+    ========================================== */
+
+    try {
+
+        const saveResponse =
+            await fetch(
+                "/api/attempt/submit",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        student_id:
+                            Number(studentId),
+
+                        attempt_id:
+                            currentAttemptId,
+
+                        topic:
+                            document
+                                .getElementById(
+                                    "quizTopic"
+                                )
+                                .value
+                                .trim(),
+
+                        answers:
+                            answersForDatabase,
+
+                        time_taken:
+                            0
+
+                    })
+                }
+            );
+
+
+        const saveData =
+            await saveResponse.json();
+
+
+        if (!saveResponse.ok) {
+
+            throw new Error(
+                saveData.message ||
+                saveData.error ||
+                "Could not save quiz attempt."
+            );
+        }
+
+
+        console.log(
+            "Quiz result saved successfully:",
+            saveData
+        );
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "SAVE ATTEMPT ERROR:",
+            error
+        );
+
+
+        alert(
+            "Quiz completed, but the result could not be saved."
+        );
+
+    }
+
+
+    /* ==========================================
+       PERFORMANCE MESSAGE
+    ========================================== */
 
     let message;
 
 
-    if (
-        percentage >= 80
-    ) {
+    if (percentage >= 80) {
 
         message =
             "🏆 Excellent Performance!";
 
     }
 
-    else if (
-        percentage >= 60
-    ) {
+    else if (percentage >= 60) {
 
         message =
             "👍 Good Job!";
@@ -922,102 +1845,445 @@ function submitQuiz() {
     }
 
 
-    // ==================================
-    // RESULT
-    // ==================================
+    /* ==========================================
+       AUTO RE-TEST BUTTON
+    ========================================== */
+
+    let retestHTML = "";
+
+
+    if (score < total) {
+
+        retestHTML = `
+
+            <div class="retest-box">
+
+                <h3>
+                    🔄 AI Auto Re-Test
+                </h3>
+
+                <p>
+                    You got some questions wrong.
+                    AI can create new questions based
+                    on the concepts you need to practice again.
+                </p>
+
+                <button
+                    class="btn retest-btn"
+                    onclick="startAutoRetest(${currentAttemptId})">
+
+                    🔄 Start Auto Re-Test
+
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+
+    /* ==========================================
+       SHOW RESULT
+    ========================================== */
 
     document
-        .getElementById(
-            "result"
-        )
+        .getElementById("result")
         .innerHTML = `
 
         <div class="result-card">
-
 
             <h1>
                 🎉 Quiz Completed!
             </h1>
 
-
             <h2>
                 ${message}
             </h2>
 
-
             <div class="score">
-
-                ${score}
-                /
-                ${total}
-
+                ${score}/${total}
             </div>
-
 
             <div class="percentage">
-
                 ${percentage}%
-
             </div>
 
-
             <p>
-
                 You answered
-                ${score}
+                <strong>${score}</strong>
+                out of
+                <strong>${total}</strong>
                 questions correctly.
-
             </p>
 
+            ${retestHTML}
 
             <hr>
-
 
             <h2>
                 📋 Answer Review
             </h2>
 
-
             ${reviewHTML}
-
 
         </div>
 
     `;
 
 
-    // Scroll to result
     document
-        .getElementById(
-            "result"
-        )
+        .getElementById("result")
         .scrollIntoView({
 
-            behavior:
-                "smooth"
+            behavior: "smooth"
 
         });
 
 }
 
+/* ==========================================
+   AUTO RE-TEST
+========================================== */
 
-// ==========================================
-// ESCAPE HTML
-// ==========================================
+async function startAutoRetest(attemptId) {
 
-function escapeHTML(
-    text
-) {
+    const studentId =
+        localStorage.getItem("student_id");
 
-    const div =
-        document.createElement(
-            "div"
+    if (!studentId) {
+
+        alert(
+            "Please login before starting Auto Re-Test."
+        );
+
+        window.location.href = "/login";
+
+        return;
+    }
+
+    if (!attemptId) {
+
+        alert(
+            "Original quiz attempt not found."
+        );
+
+        return;
+    }
+
+    const loading =
+        document.getElementById("loading");
+
+    const container =
+        document.getElementById("quizContainer");
+
+    const submitArea =
+        document.getElementById("submitArea");
+
+    const result =
+        document.getElementById("result");
+
+    loading.style.display = "block";
+
+    loading.innerHTML = `
+        🔄 AI is preparing your Auto Re-Test...
+        <br>
+        <small>
+            New questions are being created from your mistakes.
+        </small>
+    `;
+
+    container.innerHTML = "";
+
+    result.innerHTML = "";
+
+    submitArea.style.display = "none";
+
+
+    try {
+
+        /* ======================================
+           ASK BACKEND FOR NEW RETEST QUESTIONS
+        ====================================== */
+
+        const response = await fetch(
+            `/api/retest-quiz/${attemptId}`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    student_id: Number(studentId),
+                    count: 5,
+                    language: "English"
+                })
+            }
         );
 
 
-    div.textContent =
-        text;
+        /* ======================================
+           READ RESPONSE
+        ====================================== */
 
+        const data =
+            await response.json();
+
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.message ||
+                data.error ||
+                "Could not create Auto Re-Test."
+            );
+        }
+
+
+        /* ======================================
+           VALIDATE QUESTIONS
+        ====================================== */
+
+        if (
+            !Array.isArray(data.questions) ||
+            data.questions.length === 0
+        ) {
+
+            throw new Error(
+                "AI did not return re-test questions."
+            );
+        }
+
+
+        for (
+            let i = 0;
+            i < data.questions.length;
+            i++
+        ) {
+
+            const q =
+                data.questions[i];
+
+
+            if (
+                !q.question ||
+                !Array.isArray(q.options) ||
+                q.options.length !== 4 ||
+                !q.correct_answer
+            ) {
+
+                throw new Error(
+                    "Auto Re-Test question format is invalid."
+                );
+            }
+
+
+            if (
+                !q.options.includes(
+                    q.correct_answer
+                )
+            ) {
+
+                throw new Error(
+                    "Auto Re-Test correct answer is invalid."
+                );
+            }
+
+        }
+
+
+        /* ======================================
+           STORE NEW QUESTIONS
+        ====================================== */
+
+        quizQuestions =
+            data.questions;
+
+
+        /* ======================================
+           UPDATE TOPIC
+        ====================================== */
+
+        const topicInput =
+            document.getElementById("quizTopic");
+
+
+        if (data.topic) {
+
+            topicInput.value =
+                data.topic;
+
+        }
+
+
+        /* ======================================
+           START NEW DATABASE ATTEMPT
+        ====================================== */
+
+        const attemptResponse =
+            await fetch(
+                "/api/attempt/start",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        student_id:
+                            Number(studentId),
+
+                        topic:
+                            topicInput
+                                .value
+                                .trim(),
+
+                        total_questions:
+                            quizQuestions.length
+
+                    })
+                }
+            );
+
+
+        const attemptData =
+            await attemptResponse.json();
+
+
+        if (!attemptResponse.ok) {
+
+            throw new Error(
+                attemptData.message ||
+                attemptData.error ||
+                "Could not start Auto Re-Test attempt."
+            );
+        }
+
+
+        currentAttemptId =
+            attemptData.attempt_id;
+
+
+        console.log(
+            "Auto Re-Test attempt started:",
+            currentAttemptId
+        );
+
+
+        /* ======================================
+           DISPLAY NEW QUIZ
+        ====================================== */
+
+        displayQuiz();
+
+
+        submitArea.style.display =
+            "block";
+
+
+        /* ======================================
+           SHOW RETEST MESSAGE
+        ====================================== */
+
+        result.innerHTML = `
+
+            <div class="retest-box">
+
+                <h3>
+                    🔄 Auto Re-Test Started
+                </h3>
+
+                <p>
+                    These are new questions based on
+                    the concepts you previously got wrong.
+                </p>
+
+            </div>
+
+        `;
+
+
+        window.scrollTo({
+
+            top: 450,
+
+            behavior: "smooth"
+
+        });
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "AUTO RETEST ERROR:",
+            error
+        );
+
+
+        result.innerHTML = `
+
+            <div class="error-card">
+
+                <h3>
+                    ❌ Auto Re-Test Failed
+                </h3>
+
+                <p>
+                    ${escapeHTML(error.message)}
+                </p>
+
+                <p style="margin-top:15px;">
+                    Please check the Flask terminal for the actual error.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+
+    finally {
+
+        loading.style.display = "none";
+
+    }
+
+}
+
+
+/* ==========================================
+   NORMALIZE ANSWER
+========================================== */
+
+function normalizeAnswer(value) {
+
+    return String(value ?? "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .toLowerCase();
+
+}
+
+
+/* ==========================================
+   ESCAPE HTML
+========================================== */
+
+function escapeHTML(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        text ?? "";
 
     return div.innerHTML;
 
@@ -1030,3 +2296,4 @@ function escapeHTML(
 </body>
 
 </html>
+```

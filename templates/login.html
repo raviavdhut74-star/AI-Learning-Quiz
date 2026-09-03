@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Login | AI Learning</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, #dbeafe 0%, transparent 35%),
+                radial-gradient(circle at bottom right, #e0e7ff 0%, transparent 35%),
+                linear-gradient(135deg, #f8fafc, #eef2ff);
+            color: #1e293b;
+        }
+
+        nav {
+            height: 70px;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 7%;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        .page {
+            min-height: calc(100vh - 70px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 45px 20px;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 980px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 26px;
+            overflow: hidden;
+            box-shadow: 0 25px 70px rgba(15, 23, 42, 0.12);
+        }
+
+        .welcome-panel {
+            background: linear-gradient(145deg, #2563eb, #4f46e5 55%, #7c3aed);
+            color: white;
+            padding: 55px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .ai-icon {
+            width: 62px;
+            height: 62px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.16);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin-bottom: 25px;
+        }
+
+        .welcome-panel h1 {
+            font-size: 36px;
+            line-height: 1.15;
+            margin-bottom: 18px;
+        }
+
+        .welcome-panel p {
+            color: rgba(255, 255, 255, 0.86);
+            line-height: 1.7;
+            font-size: 15px;
+        }
+
+        .features {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .feature span {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-panel {
+            padding: 55px 45px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-header {
+            margin-bottom: 32px;
+        }
+
+        .form-header h2 {
+            font-size: 29px;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .form-header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .input-box {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 17px;
+            pointer-events: none;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border: 1px solid #dbe2ea;
+            border-radius: 12px;
+            background: #f8fafc;
+            outline: none;
+            font-size: 14px;
+            color: #1e293b;
+        }
+
+        input:focus {
+            background: white;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #2563eb, #6366f1);
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        #message {
+            min-height: 25px;
+            margin-top: 17px;
+            text-align: center;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .register-text {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .register-text a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        @media (max-width: 760px) {
+            nav {
+                padding: 0 20px;
+            }
+
+            .nav-links {
+                gap: 15px;
+            }
+
+            .nav-links a:nth-child(1),
+            .nav-links a:nth-child(2) {
+                display: none;
+            }
+
+            .login-wrapper {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+            }
+
+            .welcome-panel {
+                padding: 35px 30px;
+            }
+
+            .welcome-panel h1 {
+                font-size: 28px;
+            }
+
+            .features {
+                display: none;
+            }
+
+            .form-panel {
+                padding: 40px 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">
+            AI LEARNING  
+        </div>
+
+    
+    </nav>
+
+    <section class="page">
+
+        <div class="login-wrapper">
+
+            <div class="welcome-panel">
+
+                <div class="ai-icon">
+                    🧠
+                </div>
+
+                <h1>
+                    Welcome<br>
+                    Back, Learner
+                </h1>
+
+                <p>
+                    Continue your personalized learning journey
+                    with AI-powered lessons, adaptive quizzes
+                    and progress tracking.
+                </p>
+
+                <div class="features">
+
+                    <div class="feature">
+                        <span>✓</span>
+                        Personalized AI learning
+                    </div>
+
+                    <div class="feature">
+                        <span>✓</span>
+                        Adaptive quizzes
+                    </div>
+
+                    <div class="feature">
+                        <span>✓</span>
+                        Track your progress
+                    </div>
+
+                    <div class="feature">
+                        <span>✓</span>
+                        Improve your weak topics
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="form-panel">
+
+                <div class="form-header">
+                    <h2>Student Login</h2>
+
+                    <p>
+                        Enter your roll number to continue.
+                    </p>
+                </div>
+
+                <form id="loginForm">
+
+                    <div class="form-group">
+
+                        <label for="roll_no">
+                            Roll Number
+                        </label>
+
+                        <div class="input-box">
+
+                            <span class="input-icon">
+                                🎓
+                            </span>
+
+                            <input
+                                type="text"
+                                id="roll_no"
+                                placeholder="Enter your roll number"
+                                autocomplete="username"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="login-btn"
+                        id="loginBtn"
+                    >
+                        Login to Dashboard
+                    </button>
+
+                </form>
+
+                <div id="message"></div>
+
+                <div class="register-text">
+                    Don't have an account?
+                    <a href="/register">
+                        Create Profile
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <script>
+
+        const loginForm = document.getElementById("loginForm");
+        const loginBtn = document.getElementById("loginBtn");
+        const message = document.getElementById("message");
+        const rollInput = document.getElementById("roll_no");
+
+
+        loginForm.addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            const rollNo = rollInput.value.trim();
+
+            if (!rollNo) {
+                message.innerHTML =
+                    "<span style='color:red;'>Please enter Roll Number.</span>";
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.innerText = "Logging in...";
+            message.innerHTML = "Checking Roll Number...";
+
+
+            try {
+
+                const response = await fetch("/api/login", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        roll_no: rollNo
+                    })
+
+                });
+
+
+                const data = await response.json();
+
+
+                if (data.success) {
+
+                    message.innerHTML =
+                        "<span style='color:green;'>Login successful! Redirecting...</span>";
+
+
+                    localStorage.setItem(
+                        "student_id",
+                        data.student.id
+                    );
+
+                    localStorage.setItem(
+                        "studentId",
+                        data.student.id
+                    );
+
+                    localStorage.setItem(
+                        "student_name",
+                        data.student.name
+                    );
+
+                    localStorage.setItem(
+                        "student_roll_no",
+                        data.student.roll_no
+                    );
+
+
+                    setTimeout(function() {
+
+                        window.location.href = "/learn";
+
+                    }, 500);
+
+
+                } else {
+
+                    message.innerHTML =
+                        "<span style='color:red;'>" +
+                        (data.message || "Login failed.") +
+                        "</span>";
+
+                    loginBtn.disabled = false;
+                    loginBtn.innerText = "Login to Dashboard";
+
+                }
+
+            } catch (error) {
+
+                console.error("Login Error:", error);
+
+                message.innerHTML =
+                    "<span style='color:red;'>Server error. Please try again.</span>";
+
+                loginBtn.disabled = false;
+                loginBtn.innerText = "Login to Dashboard";
+
+            }
+
+        });
+
+    </script>
+
+</body>
+</html>

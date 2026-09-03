@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mistake Notebook</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding-bottom: 40px;
+        }
+
+        nav {
+            background: rgba(255,255,255,0.95);
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+        }
+
+        nav h2 {
+            color: #5b4bdb;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #444;
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 22px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .header h1 {
+            color: #4c3fc7;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat {
+            background: #f5f3ff;
+            padding: 18px;
+            border-radius: 15px;
+        }
+
+        .stat h3 {
+            font-size: 28px;
+            color: #5b4bdb;
+        }
+
+        .stat p {
+            margin-top: 5px;
+            color: #666;
+        }
+
+        .mistake-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .topic {
+            display: inline-block;
+            background: #eeeaff;
+            color: #5545d4;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .question {
+            font-size: 18px;
+            font-weight: bold;
+            color: #222;
+            line-height: 1.5;
+            margin-bottom: 18px;
+        }
+
+        .answer-box {
+            display: grid;
+            gap: 10px;
+        }
+
+        .your-answer,
+        .correct-answer {
+            padding: 13px 15px;
+            border-radius: 12px;
+        }
+
+        .your-answer {
+            background: #ffecec;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .correct-answer {
+            background: #eafaf0;
+            border-left: 5px solid #27ae60;
+        }
+
+        .answer-box strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .explanation {
+            margin-top: 18px;
+            background: #f7f7f7;
+            padding: 15px;
+            border-radius: 12px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .date {
+            margin-top: 15px;
+            color: #888;
+            font-size: 13px;
+        }
+
+        .empty {
+            background: white;
+            padding: 45px 25px;
+            text-align: center;
+            border-radius: 20px;
+            color: #666;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .empty h2 {
+            color: #5b4bdb;
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            padding: 40px;
+        }
+
+        @media (max-width: 700px) {
+            nav {
+                padding: 15px;
+            }
+
+            nav a {
+                margin-left: 8px;
+                font-size: 13px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <h2>AI Learning</h2>
+
+    <div>
+        <a href="/">Home</a>
+        <a href="/learn">Learn</a>
+        <a href="/quiz">Quiz</a>
+        <a href="/profile">Profile</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="header">
+        <h1>📕 Mistake Notebook</h1>
+        <p>Review your previous mistakes and learn from them.</p>
+
+        <div class="stats">
+            <div class="stat">
+                <h3 id="totalMistakes">0</h3>
+                <p>Total Mistakes</p>
+            </div>
+
+            <div class="stat">
+                <h3 id="topicsCount">0</h3>
+                <p>Topics</p>
+            </div>
+
+            <div class="stat">
+                <h3 id="latestMistake">—</h3>
+                <p>Latest Topic</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading" class="loading">
+        Loading mistakes...
+    </div>
+
+    <div id="mistakesContainer"></div>
+
+</div>
+
+<script>
+
+    const studentId =
+        localStorage.getItem("student_id") ||
+        localStorage.getItem("studentId");
+
+    function escapeHTML(value) {
+        const div = document.createElement("div");
+        div.textContent = value ?? "";
+        return div.innerHTML;
+    }
+
+    function getValue(obj, keys) {
+        for (const key of keys) {
+            if (
+                obj &&
+                obj[key] !== undefined &&
+                obj[key] !== null &&
+                obj[key] !== ""
+            ) {
+                return obj[key];
+            }
+        }
+
+        return "";
+    }
+
+    async function loadMistakes() {
+
+        const loading = document.getElementById("loading");
+        const container = document.getElementById("mistakesContainer");
+
+        if (!studentId) {
+            loading.style.display = "none";
+
+            container.innerHTML = `
+                <div class="empty">
+                    <h2>Student profile not found</h2>
+                    <p>Please login or create your student profile first.</p>
+                </div>
+            `;
+
+            return;
+        }
+
+        try {
+
+            const response = await fetch(
+                `/api/student/${studentId}/mistakes`
+            );
+
+            const data = await response.json();
+
+            loading.style.display = "none";
+
+            const mistakes = data.mistakes || [];
+
+            document.getElementById("totalMistakes").textContent =
+                mistakes.length;
+
+            const topics = new Set();
+
+            mistakes.forEach(mistake => {
+
+                const topic = getValue(
+                    mistake,
+                    ["topic", "subject"]
+                );
+
+                if (topic) {
+                    topics.add(topic);
+                }
+
+            });
+
+            document.getElementById("topicsCount").textContent =
+                topics.size;
+
+            if (mistakes.length > 0) {
+
+                const latestTopic = getValue(
+                    mistakes[0],
+                    ["topic", "subject"]
+                );
+
+                document.getElementById("latestMistake").textContent =
+                    latestTopic || "—";
+            }
+
+            if (mistakes.length === 0) {
+
+                container.innerHTML = `
+                    <div class="empty">
+                        <h2>🎉 No mistakes yet!</h2>
+                        <p>
+                            Complete a quiz and your wrong answers
+                            will appear here.
+                        </p>
+                    </div>
+                `;
+
+                return;
+            }
+
+            container.innerHTML = mistakes.map((mistake, index) => {
+
+                const topic = getValue(
+                    mistake,
+                    ["topic", "subject"]
+                );
+
+                const question = getValue(
+                    mistake,
+                    ["question", "question_text"]
+                );
+
+                const studentAnswer = getValue(
+                    mistake,
+                    [
+                        "student_answer",
+                        "selected_answer",
+                        "user_answer"
+                    ]
+                );
+
+                const correctAnswer = getValue(
+                    mistake,
+                    [
+                        "correct_answer",
+                        "answer"
+                    ]
+                );
+
+                const explanation = getValue(
+                    mistake,
+                    [
+                        "explanation",
+                        "reason"
+                    ]
+                );
+
+                const createdAt = getValue(
+                    mistake,
+                    [
+                        "created_at",
+                        "date",
+                        "timestamp"
+                    ]
+                );
+
+                return `
+                    <div class="mistake-card">
+
+                        <div class="topic">
+                            ${escapeHTML(topic || "General")}
+                        </div>
+
+                        <div class="question">
+                            ${index + 1}. ${escapeHTML(question)}
+                        </div>
+
+                        <div class="answer-box">
+
+                            <div class="your-answer">
+                                <strong>Your Answer</strong>
+                                ${escapeHTML(
+                                    studentAnswer || "Not answered"
+                                )}
+                            </div>
+
+                            <div class="correct-answer">
+                                <strong>Correct Answer</strong>
+                                ${escapeHTML(
+                                    correctAnswer || "Not available"
+                                )}
+                            </div>
+
+                        </div>
+
+                        ${
+                            explanation
+                            ? `
+                                <div class="explanation">
+                                    <strong>💡 Explanation</strong><br>
+                                    ${escapeHTML(explanation)}
+                                </div>
+                            `
+                            : ""
+                        }
+
+                        ${
+                            createdAt
+                            ? `
+                                <div class="date">
+                                    📅 ${escapeHTML(createdAt)}
+                                </div>
+                            `
+                            : ""
+                        }
+
+                    </div>
+                `;
+
+            }).join("");
+
+        } catch (error) {
+
+            console.error(error);
+
+            loading.style.display = "none";
+
+            container.innerHTML = `
+                <div class="empty">
+                    <h2>Something went wrong</h2>
+                    <p>
+                        Mistakes could not be loaded.
+                        Please restart the Flask server and try again.
+                    </p>
+                </div>
+            `;
+        }
+    }
+
+    loadMistakes();
+
+</script>
+
+</body>
+</html>

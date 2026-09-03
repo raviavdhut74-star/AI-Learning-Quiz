@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Adaptive Quiz</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        nav {
+            background: white;
+            padding: 16px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav h2 {
+            color: #5545d4;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #444;
+            margin-left: 18px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 35px;
+            text-align: center;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            color: #5142cc;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .analysis {
+            background: #f5f3ff;
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .analysis h2 {
+            color: #5545d4;
+        }
+
+        .topic {
+            font-size: 25px;
+            font-weight: bold;
+            margin: 12px 0;
+        }
+
+        .accuracy {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .difficulty {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 8px 18px;
+            border-radius: 20px;
+            background: #e8e4ff;
+            color: #5545d4;
+            font-weight: bold;
+        }
+
+        button {
+            border: none;
+            padding: 15px 28px;
+            border-radius: 14px;
+            background: #5545d4;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .message {
+            margin-top: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+
+    <h2>AI Learning</h2>
+
+    <div>
+        <a href="/">Home</a>
+        <a href="/learn">Learn</a>
+        <a href="/quiz">Quiz</a>
+        <a href="/profile">Profile</a>
+    </div>
+
+</nav>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>🧠 Adaptive Quiz</h1>
+
+        <p class="subtitle">
+            AI will choose a topic and difficulty based on your performance.
+        </p>
+
+        <div id="loading">
+            Analysing your learning progress...
+        </div>
+
+        <div id="analysis" style="display:none;">
+
+            <div class="analysis">
+
+                <h2>Recommended Practice</h2>
+
+                <div class="topic" id="topic">
+                    —
+                </div>
+
+                <div class="accuracy">
+                    Previous Accuracy:
+                    <strong id="accuracy">—</strong>
+                </div>
+
+                <div class="difficulty" id="difficulty">
+                    —
+                </div>
+
+            </div>
+
+            <button onclick="startAdaptiveQuiz()">
+                Start Adaptive Quiz
+            </button>
+
+            <div class="message" id="message"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    const studentId =
+        localStorage.getItem("student_id") ||
+        localStorage.getItem("studentId");
+
+    let adaptiveTopic = "";
+
+    async function loadAdaptiveRecommendation() {
+
+        if (!studentId) {
+
+            document.getElementById("loading").textContent =
+                "Please create your student profile first.";
+
+            return;
+        }
+
+        try {
+
+            const response = await fetch(
+                `/api/adaptive-quiz/${studentId}`
+            );
+
+            const data = await response.json();
+
+            if (!data.success) {
+
+                document.getElementById("loading").textContent =
+                    data.message || "Complete a quiz first.";
+
+                return;
+            }
+
+            adaptiveTopic = data.topic;
+
+            document.getElementById("topic").textContent =
+                data.topic;
+
+            document.getElementById("accuracy").textContent =
+                `${Number(data.accuracy).toFixed(1)}%`;
+
+            document.getElementById("difficulty").textContent =
+                `Difficulty: ${data.difficulty}`;
+
+            document.getElementById("loading").style.display =
+                "none";
+
+            document.getElementById("analysis").style.display =
+                "block";
+
+        } catch (error) {
+
+            console.error(error);
+
+            document.getElementById("loading").textContent =
+                "Could not analyse your progress.";
+        }
+    }
+
+
+    function startAdaptiveQuiz() {
+
+        if (!adaptiveTopic) {
+            return;
+        }
+
+        localStorage.setItem(
+            "adaptive_topic",
+            adaptiveTopic
+        );
+
+        window.location.href =
+            `/quiz?topic=${encodeURIComponent(adaptiveTopic)}`;
+    }
+
+
+    loadAdaptiveRecommendation();
+
+</script>
+
+</body>
+</html>

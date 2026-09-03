@@ -1,0 +1,742 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Registration | AI Learning</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, #dbeafe 0%, transparent 35%),
+                radial-gradient(circle at bottom right, #e0e7ff 0%, transparent 35%),
+                linear-gradient(135deg, #f8fafc, #eef2ff);
+
+            color: #1e293b;
+        }
+
+        /* NAVBAR */
+
+        nav {
+            height: 70px;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 7%;
+
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: 800;
+
+            background: linear-gradient(90deg, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #475569;
+            font-size: 14px;
+            font-weight: 600;
+
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        /* MAIN */
+
+        .page {
+            min-height: calc(100vh - 70px);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 45px 20px;
+        }
+
+        .register-wrapper {
+            width: 100%;
+            max-width: 980px;
+
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+
+            background: rgba(255, 255, 255, 0.9);
+
+            border-radius: 26px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 25px 70px rgba(15, 23, 42, 0.12);
+
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        /* LEFT PANEL */
+
+        .welcome-panel {
+            background:
+                linear-gradient(145deg, #2563eb, #4f46e5 55%, #7c3aed);
+
+            color: white;
+
+            padding: 55px 45px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-panel::before {
+            content: "";
+
+            width: 220px;
+            height: 220px;
+
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.08);
+
+            position: absolute;
+            top: -80px;
+            right: -70px;
+        }
+
+        .welcome-panel::after {
+            content: "";
+
+            width: 180px;
+            height: 180px;
+
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.06);
+
+            position: absolute;
+            bottom: -80px;
+            left: -70px;
+        }
+
+        .ai-icon {
+            width: 62px;
+            height: 62px;
+
+            border-radius: 18px;
+
+            background: rgba(255, 255, 255, 0.16);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 30px;
+
+            margin-bottom: 25px;
+
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-panel h1 {
+            font-size: 36px;
+            line-height: 1.15;
+
+            margin-bottom: 18px;
+
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-panel p {
+            color: rgba(255, 255, 255, 0.86);
+
+            line-height: 1.7;
+
+            font-size: 15px;
+
+            position: relative;
+            z-index: 2;
+        }
+
+        .features {
+            margin-top: 30px;
+
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+
+            position: relative;
+            z-index: 2;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            font-size: 14px;
+
+            color: rgba(255, 255, 255, 0.92);
+        }
+
+        .feature span {
+            width: 28px;
+            height: 28px;
+
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.15);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* FORM PANEL */
+
+        .form-panel {
+            padding: 50px 45px;
+
+            background: white;
+        }
+
+        .form-header {
+            margin-bottom: 30px;
+        }
+
+        .form-header h2 {
+            font-size: 28px;
+
+            color: #0f172a;
+
+            margin-bottom: 8px;
+        }
+
+        .form-header p {
+            color: #64748b;
+
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 13px;
+            font-weight: 700;
+
+            color: #334155;
+        }
+
+        .input-box {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+
+            left: 15px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: #64748b;
+
+            font-size: 17px;
+        }
+
+        input,
+        select {
+            width: 100%;
+
+            padding: 14px 15px 14px 45px;
+
+            border: 1px solid #dbe2ea;
+
+            border-radius: 12px;
+
+            background: #f8fafc;
+
+            outline: none;
+
+            font-size: 14px;
+
+            color: #1e293b;
+
+            transition: 0.2s;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        input:focus,
+        select:focus {
+            background: white;
+
+            border-color: #6366f1;
+
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .register-btn {
+            width: 100%;
+
+            border: none;
+
+            padding: 15px;
+
+            border-radius: 12px;
+
+            background: linear-gradient(90deg, #2563eb, #6366f1);
+
+            color: white;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            margin-top: 5px;
+
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.22);
+
+            transition: 0.2s;
+        }
+
+        .register-btn:hover {
+            transform: translateY(-2px);
+
+            box-shadow: 0 14px 30px rgba(37, 99, 235, 0.3);
+        }
+
+        .register-btn:active {
+            transform: translateY(0);
+        }
+
+        #message {
+            min-height: 25px;
+
+            margin-top: 15px;
+
+            text-align: center;
+
+            font-size: 13px;
+        }
+
+        .login-text {
+            text-align: center;
+
+            margin-top: 22px;
+
+            font-size: 13px;
+
+            color: #64748b;
+        }
+
+        .login-text a {
+            color: #2563eb;
+
+            text-decoration: none;
+
+            font-weight: 700;
+        }
+
+        .login-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 760px) {
+
+            nav {
+                padding: 0 20px;
+            }
+
+            .nav-links {
+                gap: 12px;
+            }
+
+            .nav-links a:nth-child(1),
+            .nav-links a:nth-child(2) {
+                display: none;
+            }
+
+            .register-wrapper {
+                grid-template-columns: 1fr;
+
+                max-width: 500px;
+            }
+
+            .welcome-panel {
+                padding: 35px 30px;
+            }
+
+            .welcome-panel h1 {
+                font-size: 28px;
+            }
+
+            .features {
+                display: none;
+            }
+
+            .form-panel {
+                padding: 35px 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <nav>
+
+        <div class="logo">
+            AI Learning
+        </div>
+
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/learn">Learn</a>
+            <a href="/quiz">Quiz</a>
+            <a href="/login">Login</a>
+        </div>
+
+    </nav>
+
+
+    <!-- PAGE -->
+
+    <section class="page">
+
+        <div class="register-wrapper">
+
+            <!-- LEFT -->
+
+            <div class="welcome-panel">
+
+                <div class="ai-icon">
+                    🧠
+                </div>
+
+                <h1>
+                    Start Your<br>
+                    Learning Journey
+                </h1>
+
+                <p>
+                    Create your student profile and unlock
+                    AI-powered learning, quizzes and
+                    personalized progress tracking.
+                </p>
+
+                <div class="features">
+
+                    <div class="feature">
+                        <span>✓</span>
+                        AI-powered learning material
+                    </div>
+
+                    <div class="feature">
+                        <span>✓</span>
+                        Adaptive quizzes based on your level
+                    </div>
+
+                    <div class="feature">
+                        <span>✓</span>
+                        Track your learning progress
+                    </div>
+
+                    <div class="feature">
+                        <span>✓</span>
+                        Review mistakes and improve
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- FORM -->
+
+            <div class="form-panel">
+
+                <div class="form-header">
+
+                    <h2>
+                        Create Account
+                    </h2>
+
+                    <p>
+                        Enter your details to get started.
+                    </p>
+
+                </div>
+
+
+                <form id="registerForm">
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            Student Name
+                        </label>
+
+                        <div class="input-box">
+
+                            <span class="input-icon">
+                                👤
+                            </span>
+
+                            <input
+                                type="text"
+                                id="name"
+                                placeholder="Enter your full name"
+                                autocomplete="name"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="roll_no">
+                            Roll Number
+                        </label>
+
+                        <div class="input-box">
+
+                            <span class="input-icon">
+                                🎓
+                            </span>
+
+                            <input
+                                type="text"
+                                id="roll_no"
+                                placeholder="Enter your roll number"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="language">
+                            Preferred Language
+                        </label>
+
+                        <div class="input-box">
+
+                            <span class="input-icon">
+                                🌐
+                            </span>
+
+                            <select id="language">
+
+                                <option value="English">
+                                    English
+                                </option>
+
+                                <option value="Hindi">
+                                    Hindi
+                                </option>
+
+                                <option value="Marathi">
+                                    Marathi
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="register-btn"
+                        id="registerBtn"
+                    >
+                        Create Student Profile
+                    </button>
+
+                </form>
+
+
+                <div id="message"></div>
+
+
+                <div class="login-text">
+
+                    Already registered?
+
+                    <a href="/login">
+                        Login here
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+```html
+<script>
+    const form = document.getElementById("registerForm");
+    const message = document.getElementById("message");
+    const button = document.getElementById("registerBtn");
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const name = document.getElementById("name").value.trim();
+        const rollNo = document.getElementById("roll_no").value.trim();
+        const language = document.getElementById("language").value;
+
+        if (!name) {
+            message.innerHTML =
+                "<span style='color:#dc2626;'>Please enter student name.</span>";
+            return;
+        }
+
+        if (!rollNo) {
+            message.innerHTML =
+                "<span style='color:#dc2626;'>Please enter roll number.</span>";
+            return;
+        }
+
+        button.disabled = true;
+        button.innerText = "Creating Profile...";
+        message.innerHTML = "";
+
+        try {
+            const response = await fetch("/profile", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "same-origin",
+                body: JSON.stringify({
+                    name: name,
+                    roll_no: rollNo,
+                    language: language
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(
+                    data.message || "Unable to create student profile."
+                );
+            }
+
+            if (data.student) {
+                localStorage.setItem(
+                    "student_id",
+                    data.student.id
+                );
+
+                localStorage.setItem(
+                    "studentId",
+                    data.student.id
+                );
+
+                localStorage.setItem(
+                    "student_name",
+                    data.student.name
+                );
+
+                localStorage.setItem(
+                    "student_roll_no",
+                    data.student.roll_no
+                );
+
+                localStorage.setItem(
+                    "student_language",
+                    data.student.language
+                );
+            }
+
+            message.innerHTML =
+                "<span style='color:#16a34a;'>Profile created successfully!</span>";
+
+            button.innerText = "Profile Created";
+
+            setTimeout(function () {
+                window.location.href = "/learn";
+            }, 800);
+
+        } catch (error) {
+            console.error("Registration error:", error);
+
+            message.innerHTML =
+                "<span style='color:#dc2626;'>" +
+                error.message +
+                "</span>";
+
+            button.disabled = false;
+            button.innerText = "Create Student Profile";
+        }
+    });
+</script>
+```
+
+
+</body>
+
+</html>
+```

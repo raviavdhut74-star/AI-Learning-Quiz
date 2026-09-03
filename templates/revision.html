@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Spaced Revision</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 30px 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #666;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        .stat h2 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        .stat p {
+            margin: 6px 0 0;
+            color: #666;
+        }
+
+        .revision-card {
+            background: white;
+            padding: 22px;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        .revision-card.due {
+            border-left: 6px solid #e74c3c;
+        }
+
+        .revision-card.upcoming {
+            border-left: 6px solid #3498db;
+        }
+
+        .topic {
+            font-size: 21px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .info {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .badge.due {
+            background: #ffe5e5;
+            color: #c0392b;
+        }
+
+        .badge.upcoming {
+            background: #e5f2ff;
+            color: #2471a3;
+        }
+
+        button {
+            border: none;
+            padding: 11px 18px;
+            border-radius: 9px;
+            cursor: pointer;
+            background: #111827;
+            color: white;
+            font-size: 14px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .empty {
+            background: white;
+            padding: 35px;
+            text-align: center;
+            border-radius: 16px;
+            color: #666;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 20px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        @media (max-width: 700px) {
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <a href="/profile" class="back">
+        ← Back to Profile
+    </a>
+
+    <div class="header">
+
+        <h1>🔁 Spaced Revision</h1>
+
+        <p>
+            Revise each topic at the right time to improve memory.
+        </p>
+
+    </div>
+
+
+    <div class="stats">
+
+        <div class="stat">
+            <h2 id="totalRevisions">0</h2>
+            <p>Total Topics</p>
+        </div>
+
+        <div class="stat">
+            <h2 id="dueRevisions">0</h2>
+            <p>Due Now</p>
+        </div>
+
+        <div class="stat">
+            <h2 id="completedRevisions">0</h2>
+            <p>Revision Sessions</p>
+        </div>
+
+    </div>
+
+
+    <div id="revisionList"></div>
+
+</div>
+
+
+<script>
+
+const studentId =
+    localStorage.getItem("student_id");
+
+
+if (!studentId) {
+
+    window.location.href = "/login";
+
+}
+
+
+async function loadRevisions() {
+
+    const container =
+        document.getElementById("revisionList");
+
+    container.innerHTML =
+        "<div class='empty'>Loading revisions...</div>";
+
+    try {
+
+        const response = await fetch(
+            `/api/student/${studentId}/revisions`
+        );
+
+        const data = await response.json();
+
+        if (!data.success) {
+
+            container.innerHTML =
+                `<div class="empty">
+                    ${data.message || "Unable to load revisions."}
+                </div>`;
+
+            return;
+        }
+
+        const revisions =
+            data.revisions || [];
+
+
+        document.getElementById(
+            "totalRevisions"
+        ).textContent = revisions.length;
+
+
+        const due =
+            revisions.filter(
+                revision => revision.is_due
+            );
+
+
+        document.getElementById(
+            "dueRevisions"
+        ).textContent = due.length;
+
+
+        const completed =
+            revisions.reduce(
+                (total, revision) =>
+                    total + revision.revision_count,
+                0
+            );
+
+
+        document.getElementById(
+            "completedRevisions"
+        ).textContent = completed;
+
+
+        if (revisions.length === 0) {
+
+            container.innerHTML =
+                `<div class="empty">
+                    <h3>No revisions scheduled yet.</h3>
+                    <p>
+                        Complete a quiz first.
+                        Your topic will automatically appear here.
+                    </p>
+                </div>`;
+
+            return;
+        }
+
+
+        container.innerHTML = "";
+
+
+        revisions.forEach(revision => {
+
+            const card =
+                document.createElement("div");
+
+            card.className =
+                revision.is_due
+                    ? "revision-card due"
+                    : "revision-card upcoming";
+
+
+            const date =
+                new Date(
+                    revision.next_revision
+                );
+
+
+            const readableDate =
+                isNaN(date.getTime())
+                    ? revision.next_revision
+                    : date.toLocaleString();
+
+
+            const badge =
+                revision.is_due
+                    ? `<span class="badge due">
+                        🔴 Revision Due
+                       </span>`
+                    : `<span class="badge upcoming">
+                        📅 Upcoming
+                       </span>`;
+
+
+            const button =
+                revision.is_due
+                    ? `<button
+                        onclick="completeRevision(${revision.id})">
+                        ✓ Complete Revision
+                       </button>`
+                    : "";
+
+
+            card.innerHTML = `
+
+                ${badge}
+
+                <div class="topic">
+                    ${escapeHtml(revision.topic)}
+                </div>
+
+                <div class="info">
+                    Revision sessions completed:
+                    <strong>
+                        ${revision.revision_count}
+                    </strong>
+                </div>
+
+                <div class="info">
+                    Next revision:
+                    <strong>
+                        ${readableDate}
+                    </strong>
+                </div>
+
+                ${button}
+
+            `;
+
+
+            container.appendChild(card);
+
+        });
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML =
+            `<div class="empty">
+                Failed to load revisions.
+             </div>`;
+
+    }
+
+}
+
+
+async function completeRevision(revisionId) {
+
+    try {
+
+        const response = await fetch(
+            `/api/revision/${revisionId}/complete`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    student_id:
+                        Number(studentId)
+                })
+            }
+        );
+
+
+        const data =
+            await response.json();
+
+
+        if (!data.success) {
+
+            alert(
+                data.message ||
+                "Revision could not be completed."
+            );
+
+            return;
+        }
+
+
+        alert(
+            "Revision completed! Next revision has been scheduled."
+        );
+
+
+        loadRevisions();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Something went wrong."
+        );
+
+    }
+
+}
+
+
+function escapeHtml(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        text || "";
+
+    return div.innerHTML;
+
+}
+
+
+loadRevisions();
+
+</script>
+
+</body>
+
+</html>
